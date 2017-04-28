@@ -91,7 +91,7 @@ public class SnowballStemmerTest {
   @Test
   public void testIrish() {
     SnowballStemmer stemmer = new SnowballStemmer(ALGORITHM.IRISH);
-    Assert.assertEquals(stemmer.stem("bhfeidm"), "feidhm");
+    Assert.assertEquals(stemmer.stem("bhfeidhm"), "feidhm");
     Assert.assertEquals(stemmer.stem("feirmeoireacht"), "feirmeoir");
     Assert.assertEquals(stemmer.stem("monarcacht"), "monarc");
 
