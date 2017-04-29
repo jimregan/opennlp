@@ -92,9 +92,13 @@ public class IrishSentenceBankDocument {
     }
   }
 
-  private List<IrishSentenceBankSentence> sentences = new ArrayList<IrishSentenceBankSentence>();
+  private List<IrishSentenceBankSentence> sentences;
 
-  public void add(IrishSentenceBankDocument sent) {
+  public IrishSentenceBankSentence() {
+    sentences = new ArrayList<IrishSentenceBankSentence>();
+  }
+
+  public void add(IrishSentenceBankSentence sent) {
     this.sentences.add(sent);
   }
 
