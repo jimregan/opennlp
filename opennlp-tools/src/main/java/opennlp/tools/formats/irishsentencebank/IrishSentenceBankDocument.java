@@ -17,8 +17,17 @@
 
 package opennlp.tools.formats.irishsentencebank;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import opennlp.tools.util.Span;
 
@@ -65,5 +74,21 @@ public class IrishSentenceBankDocument {
 
   private List<IrishSentenceBankSentence> sentences = new ArrayList<IrishSentenceBankSentence>();
 
-  
+  public void loadXML(InputStream is) throws IOException {
+    DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+    Document doc = docBuilder.parse(is);
+    String root = doc.getDocumentElement().getNodeName();
+    if (root != "sentences") {
+      throw new IOException("Expected root node " + root);
+    }
+    NodeList nl = doc.getDocumentElement().getChildNodes();
+    for (int i = 0; i < nl.getLength(); i++) {
+      Node sentnode = nl.item(i);
+      if (!sentnode.getNodeName().equals("sentence")) {
+        throw new IOException("Unexpected node: " + sentnode.getNodeName());
+      }
+      String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
+    }
+  }
 }
