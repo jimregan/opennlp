@@ -35,6 +35,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import opennlp.tools.tokenize.TokenSample;
 import opennlp.tools.util.Span;
 
 /**
@@ -81,6 +82,9 @@ public class IrishSentenceBankDocument {
     }
     public IrishSentenceBankFlex[] getFlex() {
       return flex;
+    }
+    public getTokenSample() {
+      return new TokenSample(original, tokens);
     }
     public IrishSentenceBankSentence(String src, String trans, String orig, 
                                      Span[] toks, IrishSentenceBankFlex[] flx) {
