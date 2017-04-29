@@ -73,7 +73,8 @@ public class IrishSentenceBankDocument {
     public IrishSentenceBankFlex[] getFlex() {
       return flex;
     }
-    public IrishSentenceBankSentence(String src, String trans, String orig, Span[] toks, IrishSentenceBankFlex[] flx) {
+    public IrishSentenceBankSentence(String src, String trans, String orig, 
+                                     Span[] toks, IrishSentenceBankFlex[] flx) {
       this.source = src;
       this.translation = trans;
       this.original = orig;
