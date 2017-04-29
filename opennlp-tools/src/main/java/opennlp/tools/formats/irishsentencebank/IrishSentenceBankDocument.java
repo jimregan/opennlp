@@ -27,10 +27,12 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import opennlp.tools.util.Span;
 
@@ -123,9 +125,15 @@ public class IrishSentenceBankDocument {
   }
 
   public void loadXML(InputStream is) throws IOException {
-    DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-    Document doc = docBuilder.parse(is);
+    try {
+      DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+      Document doc = docBuilder.parse(is);
+    } catch (ParserConfigurationException p) {
+      throw new IOException("ParserConfigurationException: " + p.getMessage());
+    } catch (SAXException s) {
+      throw new IOException("SAXException: " + s.getMessage());
+    }
     String root = doc.getDocumentElement().getNodeName();
     if (root != "sentences") {
       throw new IOException("Expected root node " + root);
@@ -137,7 +145,7 @@ public class IrishSentenceBankDocument {
         throw new IOException("Unexpected node: " + sentnode.getNodeName());
       }
       String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
-      String trans;
+      String trans = "";
       Map<Integer, String> toks = new HashMap<Integer, String>();
       Map<Integer, List<String>> flx = new HashMap<Integer, List<String>>();
       List<Span> spans = new ArrayList<Span>();
