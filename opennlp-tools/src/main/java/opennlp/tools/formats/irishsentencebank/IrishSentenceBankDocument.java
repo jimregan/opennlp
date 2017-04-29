@@ -75,6 +75,43 @@ public class IrishSentenceBankDocument {
 
   private List<IrishSentenceBankSentence> sentences = new ArrayList<IrishSentenceBankSentence>();
 
+  /**
+   * Helper to adjust the span of punctuation tokens: ignores spaces to the left of the string
+   * @param s the string to check
+   * @param start the offset of the start of the string
+   * @return the offset adjusted to ignore spaces to the left
+   */
+  private static int advanceLeft(String s, int start) {
+    int ret = start;
+    for (char c : s.toCharArray()) {
+      if (c == ' ') {
+        ret++;
+      } else {
+        return ret;
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Helper to adjust the span of punctuation tokens: ignores spaces to the right of the string
+   * @param s the string to check
+   * @param start the offset of the start of the string
+   * @return the offset of the end of the string, adjusted to ignore spaces to the right
+   */
+  private static int advanceRight(String s, int start) {
+    int end = s.length() - 1;
+    int ret = start + end + 1;
+    for (int i = end; i > 0; i--) {
+      if (s.charAt(i) == ' ') {
+        ret--;
+      } else {
+        return ret;
+      }
+    }
+    return ret;
+  }
+
   public void loadXML(InputStream is) throws IOException {
     DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -93,7 +130,9 @@ public class IrishSentenceBankDocument {
       String trans;
       Map<Integer, String> toks = new HashMap<Integer, String>();
       Map<Integer, List<String>> flx = new HashMap<Integer, List<String>>();
+      List<Span> spans = new ArrayList<Span>();
       NodeList sentnl = sentnode.getChildNodes();
+      int flexes = 1;
       for (int j = 0; j < sentnl.getLength(); j++) {
         String name = sentnl.item(j).getNodeName();
         if (name.equals("original")) {
@@ -104,15 +143,19 @@ public class IrishSentenceBankDocument {
           for (int k = 0; k < orignl.getLength(); k++) {
             if (orignl.item(k).getNodeName().equals("token")) {
               String tmp = orignl.item(k).getFirstChild().getTextContent();
-              Span tmpspan = new Span(last, last + tmp.length());
+              spans.put(new Span(last, last + tmp.length()));
               String slottmp = orignl.item(k).getAttributes().getNamedItem("slot").getNodeValue();
               Integer slot = Integer.parseInt(slottmp);
+              if (slot > flexes) {
+                flexes = slot;
+              }
               toks.put(slot, tmp);
               orig += tmp;
               last += tmp.length();              
             } else if (orignl.item(k).getNodeName().equals("#text")) {
               String tmp = orignl.item(k).getFirstChild().getTextContent();
               orig += tmp;
+              spans.put(new Span(adjustLeft(tmp, last), adjustRight(tmp, last)));
               last += tmp.length();
             } else {
               throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
@@ -123,6 +166,9 @@ public class IrishSentenceBankDocument {
         } else if (name.equals("flex")) {
           String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
           Integer slot = Integer.parseInt(slottmp);
+          if (slot > flexes) {
+            flexes = slot;
+          }
           if (flx.get(slot) == null) {
             flx.put(slot, new ArrayList<String>());
           }
@@ -130,6 +176,13 @@ public class IrishSentenceBankDocument {
           flx.get(slot).add(tkn);
         } else {
           throw new IOException("Unexpected node: " + name);
+        }
+        IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes - 1];
+        for (int flexidx = 1; flexidx <= flexes; flexidx++) {
+          String left = toks.get(flexidx);
+          String[] right = new String[flx.get(flexidx).size()];
+          right = flx.get(flexidx).toArray(right);
+          flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
         }
       }
     }
