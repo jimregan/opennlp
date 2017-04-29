@@ -206,4 +206,5 @@ public class IrishSentenceBankDocument {
     } catch (SAXException s) {
       throw new IOException("SAXException: " + s.getMessage());
     }
+  }
 }
