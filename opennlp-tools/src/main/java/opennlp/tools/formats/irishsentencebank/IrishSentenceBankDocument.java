@@ -143,7 +143,7 @@ public class IrishSentenceBankDocument {
       List<Span> spans = new ArrayList<Span>();
       NodeList sentnl = sentnode.getChildNodes();
       int flexes = 1;
-      StringBuilder orig;
+      StringBuilder orig = new StringBuilder();
       for (int j = 0; j < sentnl.getLength(); j++) {
         String name = sentnl.item(j).getNodeName();
         if (name.equals("original")) {
