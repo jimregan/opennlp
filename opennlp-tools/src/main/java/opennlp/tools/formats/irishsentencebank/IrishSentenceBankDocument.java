@@ -94,7 +94,7 @@ public class IrishSentenceBankDocument {
 
   private List<IrishSentenceBankSentence> sentences;
 
-  public IrishSentenceBankSentence() {
+  public IrishSentenceBankDocument() {
     sentences = new ArrayList<IrishSentenceBankSentence>();
   }
 
@@ -102,7 +102,7 @@ public class IrishSentenceBankDocument {
     this.sentences.add(sent);
   }
 
-  public List<IrishSentenceBankDocument> getSentences() {
+  public List<IrishSentenceBankSentence> getSentences() {
     return Collections.unmodifiableList(sentences);
   }
 
