@@ -19,6 +19,7 @@ package opennlp.tools.formats.irishsentencebank;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +90,48 @@ public class IrishSentenceBankDocument {
         throw new IOException("Unexpected node: " + sentnode.getNodeName());
       }
       String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
+      String trans;
+      Map<Integer, String> toks = new HashMap<Integer, String>();
+      Map<Integer, List<String>> flx = new HashMap<Integer, List<String>>();
+      NodeList sentnl = sentnode.getChildNodes();
+      for (int j = 0; j < sentnl.getLength(); j++) {
+        String name = sentnl.item(j).getNodeName();
+        if (name.equals("original")) {
+          StringBuilder orig;
+          int last = 0;
+          List<Span> spans = new ArrayList<Span>();
+          NodeList orignl = sentnl.item(j).getChildNodes();
+          for (int k = 0; k < orignl.getLength(); k++) {
+            if (orignl.item(k).getNodeName().equals("token")) {
+              String tmp = orignl.item(k).getFirstChild().getTextContent();
+              Span tmpspan = new Span(last, last + tmp.length());
+              String slottmp = orignl.item(k).getAttributes().getNamedItem("slot").getNodeValue();
+              Integer slot = Integer.parseInt(slottmp);
+              toks.put(slot, tmp);
+              orig += tmp;
+              last += tmp.length();              
+            } else if (orignl.item(k).getNodeName().equals("#text")) {
+              String tmp = orignl.item(k).getFirstChild().getTextContent();
+              orig += tmp;
+              last += tmp.length();
+            } else {
+              throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
+            }
+          }
+        } else if (name.equals("translation")) {
+          trans = sentnl.item(j).getFirstChild().getTextContent();
+        } else if (name.equals("flex")) {
+          String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
+          Integer slot = Integer.parseInt(slottmp);
+          if (flx.get(slot) == null) {
+            flx.put(slot, new ArrayList<String>());
+          }
+          String tkn = sentnl.item(j).getFirstChild().getTextContent();
+          flx.get(slot).add(tkn);
+        } else {
+          throw new IOException("Unexpected node: " + name);
+        }
+      }
     }
   }
 }
