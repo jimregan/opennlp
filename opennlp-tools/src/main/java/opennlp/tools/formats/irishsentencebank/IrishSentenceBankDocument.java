@@ -73,6 +73,13 @@ public class IrishSentenceBankDocument {
     public IrishSentenceBankFlex[] getFlex() {
       return flex;
     }
+    public IrishSentenceBankSentence(String src, String trans, String orig, Span[] toks, IrishSentenceBankFlex[] flx) {
+      this.source = src;
+      this.translation = trans;
+      this.original = orig;
+      this.tokens = toks;
+      this.flex = flx;
+    }
   }
 
   private List<IrishSentenceBankSentence> sentences = new ArrayList<IrishSentenceBankSentence>();
@@ -140,12 +147,11 @@ public class IrishSentenceBankDocument {
         if (name.equals("original")) {
           StringBuilder orig;
           int last = 0;
-          List<Span> spans = new ArrayList<Span>();
           NodeList orignl = sentnl.item(j).getChildNodes();
           for (int k = 0; k < orignl.getLength(); k++) {
             if (orignl.item(k).getNodeName().equals("token")) {
               String tmp = orignl.item(k).getFirstChild().getTextContent();
-              spans.put(new Span(last, last + tmp.length()));
+              spans.add(new Span(last, last + tmp.length()));
               String slottmp = orignl.item(k).getAttributes().getNamedItem("slot").getNodeValue();
               Integer slot = Integer.parseInt(slottmp);
               if (slot > flexes) {
@@ -157,7 +163,7 @@ public class IrishSentenceBankDocument {
             } else if (orignl.item(k).getNodeName().equals("#text")) {
               String tmp = orignl.item(k).getFirstChild().getTextContent();
               orig += tmp;
-              spans.put(new Span(adjustLeft(tmp, last), adjustRight(tmp, last)));
+              spans.add(new Span(adjustLeft(tmp, last), adjustRight(tmp, last)));
               last += tmp.length();
             } else {
               throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
@@ -186,6 +192,9 @@ public class IrishSentenceBankDocument {
           right = flx.get(flexidx).toArray(right);
           flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
         }
+        Span[] spanout = new Span[spans.size()];
+        spanout = spans.toArray(spanout);
+        this.sentences.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
       }
     }
   }
