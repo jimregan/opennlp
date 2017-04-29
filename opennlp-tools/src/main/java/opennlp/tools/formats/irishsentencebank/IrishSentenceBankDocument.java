@@ -159,12 +159,12 @@ public class IrishSentenceBankDocument {
                 flexes = slot;
               }
               toks.put(slot, tmp);
-              orig += tmp;
+              orig.append(tmp);
               last += tmp.length();              
             } else if (orignl.item(k).getNodeName().equals("#text")) {
               String tmp = orignl.item(k).getFirstChild().getTextContent();
-              orig += tmp;
-              spans.add(new Span(adjustLeft(tmp, last), adjustRight(tmp, last)));
+              orig.append(tmp);
+              spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
               last += tmp.length();
             } else {
               throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
