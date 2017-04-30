@@ -178,9 +178,6 @@ public class IrishSentenceBankDocument {
           for (int j = 0; j < sentnl.getLength(); j++) {
             final String name = sentnl.item(j).getNodeName();
             if (name.equals("flex")) {
-              if (true) {
-                throw new IOException("got here");
-              }
               String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
               Integer slot = Integer.parseInt(slottmp);
               if (slot > flexes) {
@@ -193,14 +190,8 @@ public class IrishSentenceBankDocument {
 
               String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
               flx.get(slot).add(tkn);
-              if (true) {
-                throw new IOException("as: " + slottmp + " " + tkn);
-              }
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
-              if (true) {
-                throw new IOException("trans " + trans);
-              }
             } else if (name.equals("original")) {
               int last = 0;
               NodeList orignl = sentnl.item(j).getChildNodes();
