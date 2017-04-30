@@ -39,7 +39,7 @@ public class IrishSentenceBankDocumentTest {
 
       IrishSentenceBankDocument.IrishSentenceBankSentence sent1 = sents.get(0);
 
-      assertEquals("A Dhia, tá mé ag iompar clainne!", sent1.getOriginal());
+      Assert.assertEquals("A Dhia, tá mé ag iompar clainne!", sent1.getOriginal());
 
     }
   }
