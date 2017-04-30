@@ -256,7 +256,7 @@ public class IrishSentenceBankDocument {
           if (trans == null) {
             throw new IOException("trans is null");
           }
-          if (orig == null || orig.toString()) {
+          if (orig == null || orig.toString() == null) {
             throw new IOException("orig is null");
           }
           document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
