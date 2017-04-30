@@ -205,7 +205,7 @@ public class IrishSentenceBankDocument {
                 orig.append(tmp);
                 last += tmp.length();              
               } else if (orignl.item(k).getNodeName().equals("#text")) {
-                String tmp = orignl.item(k).getFirstChild().getTextContent();
+                String tmp = orignl.item(k).getTextContent();
                 orig.append(tmp);
 
                 spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
