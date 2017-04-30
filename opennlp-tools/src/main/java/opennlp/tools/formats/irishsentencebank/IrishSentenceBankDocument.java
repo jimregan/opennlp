@@ -223,6 +223,8 @@ public class IrishSentenceBankDocument {
 
             String tkn = sentnl.item(j).getFirstChild().getTextContent();
             flx.get(slot).add(tkn);
+          } else if (name.equals("#text") {
+            // Do nothing
           } else {
             throw new IOException("Unexpected node: " + name);
           }
