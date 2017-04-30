@@ -166,7 +166,7 @@ public class IrishSentenceBankDocument {
       for (int i = 0; i < nl.getLength(); i++) {
         Node sentnode = nl.item(i);
         if (sentnode.getNodeName().equals("#text") || sentnode.getNodeName().equals("#comment")) {
-          next;
+          continue;
         } else if (!sentnode.getNodeName().equals("sentence")) {
           throw new IOException("Unexpected node: " + sentnode.getNodeName());
         }
@@ -226,7 +226,7 @@ public class IrishSentenceBankDocument {
             String tkn = sentnl.item(j).getFirstChild().getTextContent();
             flx.get(slot).add(tkn);
           } else if (name.equals("#text") || name.equals("#comment")) {
-            next;
+            continue;
           } else {
             throw new IOException("Unexpected node: " + name);
           }
