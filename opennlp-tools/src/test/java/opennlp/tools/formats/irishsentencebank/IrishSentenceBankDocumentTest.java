@@ -24,6 +24,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import opennlp.tools.tokenize.TokenSample;
+import opennlp.tools.util.Span;
+
 public class IrishSentenceBankDocumentTest {
 
   @Test
@@ -48,10 +51,15 @@ public class IrishSentenceBankDocumentTest {
       Assert.assertArrayEquals(new String[]{"a"}, flex[0].getFlex());
 
       IrishSentenceBankDocument.IrishSentenceBankFlex[] flex2 = sent2.getFlex();
-      Assert.assertEquals("ón", flex[4].getSurface());
-      Assert.assertArrayEquals(new String[]{"ó", "an"}, flex[4].getFlex());
+      Assert.assertEquals("ón", flex2[4].getSurface());
+      Assert.assertArrayEquals(new String[]{"ó", "an"}, flex2[4].getFlex());
 
       Assert.assertEquals("Excuse me, are you from the stone age?", sent2.getTranslation());
+
+      TokenSample ts = sent1.getTokenSample();
+      for (Span s : ts.getTokenSpans()) {
+        System.out.println(s.getStart() + " " + s.getEnd() + " " + ts.getText.substring(s.getStart, s.getEnd));
+      }
     }
   }
 }
