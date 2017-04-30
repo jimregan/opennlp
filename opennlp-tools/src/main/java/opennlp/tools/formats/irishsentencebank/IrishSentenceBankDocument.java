@@ -173,6 +173,9 @@ public class IrishSentenceBankDocument {
 
         System.out.println("At node: " + sentnode.getNodeName());
         System.out.println("attributes: " + sentnode.getAttributes().getLength());
+        if (sentnode.getAttributes() == null) {
+          throw new IOException("At node: " + sentnode.getNodeName());
+        }
         String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
         String trans = "";
         Map<Integer, String> toks = new HashMap<Integer, String>();
