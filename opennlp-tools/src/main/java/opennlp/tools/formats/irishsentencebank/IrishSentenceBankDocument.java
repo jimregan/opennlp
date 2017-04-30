@@ -83,7 +83,7 @@ public class IrishSentenceBankDocument {
     public IrishSentenceBankFlex[] getFlex() {
       return flex;
     }
-    public getTokenSample() {
+    public TokenSample getTokenSample() {
       return new TokenSample(original, tokens);
     }
     public IrishSentenceBankSentence(String src, String trans, String orig, 
