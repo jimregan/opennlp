@@ -213,7 +213,7 @@ public class IrishSentenceBankDocument {
                   String tmp = orignl.item(k).getTextContent();
                   orig.append(tmp);
 
-                  if(!" ".equals(tmp)) {
+                  if (!" ".equals(tmp)) {
                     spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
                   }
 
