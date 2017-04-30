@@ -204,7 +204,7 @@ public class IrishSentenceBankDocument {
                 } else {
                   throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
-                throw new IOException("Ugh: " + orig.toString());
+                throw new IOException("Ugh: " + orig.toString() + "|" + toks.values().toString());
               }
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
