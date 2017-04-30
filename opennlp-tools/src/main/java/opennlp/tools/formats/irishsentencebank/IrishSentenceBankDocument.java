@@ -207,6 +207,9 @@ public class IrishSentenceBankDocument {
               }
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
+              if (true) {
+                throw new IOException("trans " + trans);
+              }
             } else if (name.equals("flex")) {
               if (true) {
                 throw new IOException("got here");
