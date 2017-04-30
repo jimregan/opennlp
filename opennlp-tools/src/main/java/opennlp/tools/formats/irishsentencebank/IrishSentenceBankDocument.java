@@ -17,6 +17,8 @@
 
 package opennlp.tools.formats.irishsentencebank;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.StringBuilder;
@@ -243,6 +245,12 @@ public class IrishSentenceBankDocument {
       throw new IllegalStateException(e);
     } catch (SAXException e) {
       throw new IOException("Failed to parse IrishSentenceBank document", e);
+    }
+  }
+
+  static IrishSentenceBankDocument parse(File file) throws IOException {
+    try (InputStream in = new FileInputStream(file)) {
+      return parse(in);
     }
   }
 }
