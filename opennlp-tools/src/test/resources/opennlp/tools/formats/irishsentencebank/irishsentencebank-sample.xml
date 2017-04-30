@@ -10,4 +10,16 @@
 	<flex slot='6' lemma='iompair'/>
 	<flex slot='7' lemma='clann'/>
 </sentence>
+<sentence source='potaL'>
+	<original xml:space="preserve"><token slot='1'>Gabh</token> <token slot='2'>mo</token> <token slot='3'>leithscéal</token>, <token slot='4'>an</token> <token slot='5'>ón</token> <token slot='6'>chlochaois</token> <token slot='7'>thú</token>?</original>
+	<translation>Excuse me, are you from the stone age?</translation>
+	<flex slot='1' lemma='gabh'/>
+	<flex slot='2' lemma='mo'/>
+	<flex slot='3' lemma='leithscéal'/>
+	<flex slot='4' lemma='an'/>
+	<flex slot='5' lemma='ó'/>
+	<flex slot='5' lemma='an'/>
+	<flex slot='6' lemma='clochaois'/>
+	<flex slot='7' lemma='thú'/>
+</sentence>
 </sentences>
