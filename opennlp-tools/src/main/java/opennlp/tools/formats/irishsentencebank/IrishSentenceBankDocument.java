@@ -165,89 +165,88 @@ public class IrishSentenceBankDocument {
       NodeList nl = doc.getDocumentElement().getChildNodes();
       for (int i = 0; i < nl.getLength(); i++) {
         Node sentnode = nl.item(i);
-        if (sentnode.getNodeName().equals("#text") || sentnode.getNodeName().equals("#comment")) {
-          continue;
-        } else if (!sentnode.getNodeName().equals("sentence")) {
-          throw new IOException("Unexpected node: " + sentnode.getNodeName());
-        }
+        if (sentnode.getNodeName().equals("sentence")) {
+          String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
+          String trans = "";
+          Map<Integer, String> toks = new HashMap<Integer, String>();
+          Map<Integer, List<String>> flx = new HashMap<Integer, List<String>>();
+          List<Span> spans = new ArrayList<Span>();
+          NodeList sentnl = sentnode.getChildNodes();
+          int flexes = 1;
+          StringBuilder orig = new StringBuilder();
 
-        String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
-        String trans = "";
-        Map<Integer, String> toks = new HashMap<Integer, String>();
-        Map<Integer, List<String>> flx = new HashMap<Integer, List<String>>();
-        List<Span> spans = new ArrayList<Span>();
-        NodeList sentnl = sentnode.getChildNodes();
-        int flexes = 1;
-        StringBuilder orig = new StringBuilder();
+          for (int j = 0; j < sentnl.getLength(); j++) {
+            String name = sentnl.item(j).getNodeName();
+            if (name.equals("original")) {
+              int last = 0;
+              NodeList orignl = sentnl.item(j).getChildNodes();
+              for (int k = 0; k < orignl.getLength(); k++) {
+                if (orignl.item(k).getNodeName().equals("token")) {
+                  String tmp = orignl.item(k).getFirstChild().getTextContent();
+                  spans.add(new Span(last, last + tmp.length()));
 
-        for (int j = 0; j < sentnl.getLength(); j++) {
-          String name = sentnl.item(j).getNodeName();
-          if (name.equals("original")) {
-            int last = 0;
-            NodeList orignl = sentnl.item(j).getChildNodes();
-            for (int k = 0; k < orignl.getLength(); k++) {
-              if (orignl.item(k).getNodeName().equals("token")) {
-                String tmp = orignl.item(k).getFirstChild().getTextContent();
-                spans.add(new Span(last, last + tmp.length()));
+                  String slottmp = orignl.item(k).getAttributes().getNamedItem("slot").getNodeValue();
+                  Integer slot = Integer.parseInt(slottmp);
+                  if (slot > flexes) {
+                    flexes = slot;
+                  }
 
-                String slottmp = orignl.item(k).getAttributes().getNamedItem("slot").getNodeValue();
-                Integer slot = Integer.parseInt(slottmp);
-                if (slot > flexes) {
-                  flexes = slot;
+                  toks.put(slot, tmp);
+                  orig.append(tmp);
+                  last += tmp.length();              
+                } else if (orignl.item(k).getNodeName().equals("#text")) {
+                  String tmp = orignl.item(k).getTextContent();
+                  orig.append(tmp);
+
+                  spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
+
+                  last += tmp.length();
+                } else {
+                  throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
-
-                toks.put(slot, tmp);
-                orig.append(tmp);
-                last += tmp.length();              
-              } else if (orignl.item(k).getNodeName().equals("#text")) {
-                String tmp = orignl.item(k).getTextContent();
-                orig.append(tmp);
-
-                spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
-
-                last += tmp.length();
-              } else {
-                throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
               }
+            } else if (name.equals("translation")) {
+              trans = sentnl.item(j).getFirstChild().getTextContent();
+              throw new IOException("trans " + trans);
+            } else if (name.equals("flex")) {
+              String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
+              Integer slot = Integer.parseInt(slottmp);
+              if (slot > flexes) {
+                flexes = slot;
+              }
+
+              if (flx.get(slot) == null) {
+                flx.put(slot, new ArrayList<String>());
+              }
+
+              String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
+              flx.get(slot).add(tkn);
+              throw new IOException("WTF? " + flx.size() + flx.keySet().toString() + slot + tkn);
+            } else if (name.equals("#text") || name.equals("#comment")) {
+              continue;
+            } else {
+              throw new IOException("Unexpected node: " + name);
             }
-          } else if (name.equals("translation")) {
-            trans = sentnl.item(j).getFirstChild().getTextContent();
-            throw new IOException("trans " + trans);
-          } else if (name.equals("flex")) {
-            String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
-            Integer slot = Integer.parseInt(slottmp);
-            if (slot > flexes) {
-              flexes = slot;
+            IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
+            for (int flexidx = 1; flexidx <= flexes; flexidx++) {
+              String left = toks.get(flexidx);
+              if (flx == null || flx.get(flexidx) == null) {
+                throw new IOException("WTF? " + flx.size() + flx.keySet().toString());
+              }
+              int rsize = flx.get(flexidx).size();
+              String[] right = new String[rsize];
+              right = flx.get(flexidx).toArray(right);
+              flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
             }
 
-            if (flx.get(slot) == null) {
-              flx.put(slot, new ArrayList<String>());
-            }
-
-            String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
-            flx.get(slot).add(tkn);
-            throw new IOException("WTF? " + flx.size() + flx.keySet().toString() + slot + tkn);
-          } else if (name.equals("#text") || name.equals("#comment")) {
-            continue;
-          } else {
-            throw new IOException("Unexpected node: " + name);
+            Span[] spanout = new Span[spans.size()];
+            spanout = spans.toArray(spanout);
+            document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
           }
-
-          IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
-          for (int flexidx = 1; flexidx <= flexes; flexidx++) {
-            String left = toks.get(flexidx);
-            if (flx == null || flx.get(flexidx) == null) {
-              throw new IOException("WTF? " + flx.size() + flx.keySet().toString());
-            }
-            int rsize = flx.get(flexidx).size();
-            String[] right = new String[rsize];
-            right = flx.get(flexidx).toArray(right);
-            flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
-          }
-
-          Span[] spanout = new Span[spans.size()];
-          spanout = spans.toArray(spanout);
-          document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
+        } else if (sentnode.getNodeName().equals("#text") || sentnode.getNodeName().equals("#comment")) {
+          continue;
+        } else {
+          throw new IOException("Unexpected node: " + sentnode.getNodeName());
         }
       }
       return document;
