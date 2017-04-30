@@ -171,11 +171,6 @@ public class IrishSentenceBankDocument {
           throw new IOException("Unexpected node: " + sentnode.getNodeName());
         }
 
-        System.out.println("At node: " + sentnode.getNodeName());
-        System.out.println("attributes: " + sentnode.getAttributes().getLength());
-        if (sentnode.getAttributes().getNamedItem("source") == null) {
-          throw new IOException("At node: " + sentnode.getNodeName());
-        }
         String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
         String trans = "";
         Map<Integer, String> toks = new HashMap<Integer, String>();
@@ -236,6 +231,9 @@ public class IrishSentenceBankDocument {
             throw new IOException("Unexpected node: " + name);
           }
 
+          if (src == null) {
+            throw new IOException("src is null");
+          }
           IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes - 1];
           for (int flexidx = 1; flexidx <= flexes; flexidx++) {
             String left = toks.get(flexidx);
@@ -246,6 +244,18 @@ public class IrishSentenceBankDocument {
 
           Span[] spanout = new Span[spans.size()];
           spanout = spans.toArray(spanout);
+          if (src == null) {
+            throw new IOException("src is null");
+          }
+          if (spanout == null) {
+            throw new IOException("spanout is null");
+          }
+          if (trans == null) {
+            throw new IOException("trans is null");
+          }
+          if (flexa == null) {
+            throw new IOException("flexa is null");
+          }
           document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
         }
       }
