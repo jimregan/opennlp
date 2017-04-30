@@ -175,12 +175,12 @@ public class IrishSentenceBankDocument {
           int flexes = 1;
           StringBuilder orig = new StringBuilder();
 
-          for (int j = 0; j < sentnl.getLength(); j++) {
+          for (int j = 0; j <= sentnl.getLength(); j++) {
             String name = sentnl.item(j).getNodeName();
             if (name.equals("original")) {
               int last = 0;
               NodeList orignl = sentnl.item(j).getChildNodes();
-              for (int k = 0; k < orignl.getLength(); k++) {
+              for (int k = 0; k <= orignl.getLength(); k++) {
                 if (orignl.item(k).getNodeName().equals("token")) {
                   String tmp = orignl.item(k).getFirstChild().getTextContent();
                   spans.add(new Span(last, last + tmp.length()));
@@ -201,6 +201,7 @@ public class IrishSentenceBankDocument {
                   spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
 
                   last += tmp.length();
+                  throw new IOException("Ugh: " + orig.toString());
                 } else {
                   throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
