@@ -231,15 +231,9 @@ public class IrishSentenceBankDocument {
             throw new IOException("Unexpected node: " + name);
           }
 
-          if (src == null) {
-            throw new IOException("src is null");
-          }
-          IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes - 1];
+          IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
           for (int flexidx = 1; flexidx <= flexes; flexidx++) {
             String left = toks.get(flexidx);
-            if (flx.get(flexidx) == null) {
-              throw new IOException("WTF? " + flexidx);
-            }
             String[] right = new String[flx.get(flexidx).size()];
             right = flx.get(flexidx).toArray(right);
             flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
