@@ -180,7 +180,6 @@ public class IrishSentenceBankDocument {
             if (name.equals("original")) {
               int last = 0;
               NodeList orignl = sentnl.item(j).getChildNodes();
-              int reached = 0;
               for (int k = 0; k <= orignl.getLength(); k++) {
                 if (orignl.item(k).getNodeName().equals("token")) {
                   String tmp = orignl.item(k).getFirstChild().getTextContent();
@@ -206,7 +205,9 @@ public class IrishSentenceBankDocument {
                   throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
               }
-              throw new IOException("Ugh: " + orig.toString() + "|" + toks.values().toString());
+              if(true) {
+                throw new IOException("Ugh: " + orig.toString() + "|" + toks.values().toString());
+              }
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
               throw new IOException("trans " + trans);
