@@ -225,6 +225,9 @@ public class IrishSentenceBankDocument {
 
             String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
             flx.get(slot).add(tkn);
+            if (flx == null || flx.get(flexidx) == null) {
+              throw new IOException("WTF? " + flx.size() + flx.keySet().toString() + slot + tkn);
+            }
           } else if (name.equals("#text") || name.equals("#comment")) {
             continue;
           } else {
