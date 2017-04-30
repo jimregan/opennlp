@@ -234,6 +234,9 @@ public class IrishSentenceBankDocument {
           IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
           for (int flexidx = 1; flexidx <= flexes; flexidx++) {
             String left = toks.get(flexidx);
+            if (flx.get(flexidx) == null) {
+              throw new IOException("WTF? " + flex.size());
+            }
             String[] right = new String[flx.get(flexidx).size()];
             right = flx.get(flexidx).toArray(right);
             flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
