@@ -201,10 +201,10 @@ public class IrishSentenceBankDocument {
                   spans.add(new Span(advanceLeft(tmp, last), advanceRight(tmp, last)));
 
                   last += tmp.length();
-                  throw new IOException("Ugh: " + orig.toString());
                 } else {
                   throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
+                throw new IOException("Ugh: " + orig.toString());
               }
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
