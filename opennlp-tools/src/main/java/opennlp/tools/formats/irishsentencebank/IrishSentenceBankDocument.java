@@ -225,22 +225,22 @@ public class IrishSentenceBankDocument {
             } else {
               throw new IOException("Unexpected node: " + name);
             }
-            IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
-            for (Integer flexidx : toks.keySet()) {
-              String left = toks.get(flexidx);
-              if (toks.size() > flx.size()) {
-                throw new IOException("Error reading <flex> element" + toks.size() + " " + flx.size());
-              }
-              int rsize = flx.get(flexidx).size();
-              String[] right = new String[rsize];
-              right = flx.get(flexidx).toArray(right);
-              flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
-            }
-
-            Span[] spanout = new Span[spans.size()];
-            spanout = spans.toArray(spanout);
-            document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
           }
+          IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
+          for (Integer flexidx : toks.keySet()) {
+            String left = toks.get(flexidx);
+            if (toks.size() > flx.size()) {
+              throw new IOException("Error reading <flex> element" + toks.size() + " " + flx.size());
+            }
+            int rsize = flx.get(flexidx).size();
+            String[] right = new String[rsize];
+            right = flx.get(flexidx).toArray(right);
+            flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
+          }
+
+          Span[] spanout = new Span[spans.size()];
+          spanout = spans.toArray(spanout);
+          document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
         } else if (sentnode.getNodeName().equals("#text") || sentnode.getNodeName().equals("#comment")) {
           continue;
         } else {
