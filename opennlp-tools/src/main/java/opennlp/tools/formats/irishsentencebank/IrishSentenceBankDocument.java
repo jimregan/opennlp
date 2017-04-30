@@ -235,11 +235,11 @@ public class IrishSentenceBankDocument {
             throw new IOException("src is null");
           }
           IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes - 1];
-          if (flexa == null) {
-            throw new IOException("flexa is null: " + flexes);
-          }
           for (int flexidx = 1; flexidx <= flexes; flexidx++) {
             String left = toks.get(flexidx);
+            if (flx.get(flexidx) == null) {
+              throw new IOException("WTF? " + flexidx);
+            }
             String[] right = new String[flx.get(flexidx).size()];
             right = flx.get(flexidx).toArray(right);
             flexa[flexidx - 1] = new IrishSentenceBankFlex(left, right);
@@ -247,18 +247,6 @@ public class IrishSentenceBankDocument {
 
           Span[] spanout = new Span[spans.size()];
           spanout = spans.toArray(spanout);
-          if (src == null) {
-            throw new IOException("src is null");
-          }
-          if (spanout == null) {
-            throw new IOException("spanout is null");
-          }
-          if (trans == null) {
-            throw new IOException("trans is null");
-          }
-          if (orig == null || orig.toString() == null) {
-            throw new IOException("orig is null");
-          }
           document.add(new IrishSentenceBankSentence(src, trans, orig.toString(), spanout, flexa));
         }
       }
