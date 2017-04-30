@@ -223,7 +223,7 @@ public class IrishSentenceBankDocument {
               flx.put(slot, new ArrayList<String>());
             }
 
-            String tkn = sentnl.item(j).getFirstChild().getTextContent();
+            String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
             flx.get(slot).add(tkn);
           } else if (name.equals("#text") || name.equals("#comment")) {
             continue;
