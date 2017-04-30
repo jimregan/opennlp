@@ -58,7 +58,8 @@ public class IrishSentenceBankDocumentTest {
 
       TokenSample ts = sent1.getTokenSample();
       for (Span s : ts.getTokenSpans()) {
-        System.out.println(s.getStart() + " " + s.getEnd() + " " + ts.getText.substring(s.getStart, s.getEnd));
+        System.err.println(s.getStart() + " " + s.getEnd());
+        System.err.println(ts.getText().substring(s.getStart(), s.getEnd()));
       }
     }
   }
