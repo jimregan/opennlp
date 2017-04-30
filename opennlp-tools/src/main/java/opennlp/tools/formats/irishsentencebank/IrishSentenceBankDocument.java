@@ -176,7 +176,7 @@ public class IrishSentenceBankDocument {
           StringBuilder orig = new StringBuilder();
 
           for (int j = 0; j < sentnl.getLength(); j++) {
-            String name = sentnl.item(j).getNodeName();
+            final String name = sentnl.item(j).getNodeName();
             if (name.equals("original")) {
               int last = 0;
               NodeList orignl = sentnl.item(j).getChildNodes();
