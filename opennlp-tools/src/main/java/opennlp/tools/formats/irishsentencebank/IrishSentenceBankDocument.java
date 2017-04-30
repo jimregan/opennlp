@@ -235,7 +235,7 @@ public class IrishSentenceBankDocument {
           for (int flexidx = 1; flexidx <= flexes; flexidx++) {
             String left = toks.get(flexidx);
             if (flx == null || flx.get(flexidx) == null) {
-              throw new IOException("WTF? " + flex.size());
+              throw new IOException("WTF? " + flx.size());
             }
             int rsize = flx.get(flexidx).size();
             String[] right = new String[rsize];
