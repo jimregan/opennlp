@@ -163,7 +163,7 @@ public class IrishSentenceBankDocument {
       }
 
       NodeList nl = doc.getDocumentElement().getChildNodes();
-      for (int i = 0; i <= nl.getLength(); i++) {
+      for (int i = 0; i < nl.getLength(); i++) {
         Node sentnode = nl.item(i);
         if (sentnode.getNodeName().equals("sentence")) {
           String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
@@ -175,12 +175,12 @@ public class IrishSentenceBankDocument {
           int flexes = 1;
           StringBuilder orig = new StringBuilder();
 
-          for (int j = 0; j <= sentnl.getLength(); j++) {
+          for (int j = 0; j < sentnl.getLength(); j++) {
             String name = sentnl.item(j).getNodeName();
             if (name.equals("original")) {
               int last = 0;
               NodeList orignl = sentnl.item(j).getChildNodes();
-              for (int k = 0; k <= orignl.getLength(); k++) {
+              for (int k = 0; k < orignl.getLength(); k++) {
                 if (orignl.item(k).getNodeName().equals("token")) {
                   String tmp = orignl.item(k).getFirstChild().getTextContent();
                   spans.add(new Span(last, last + tmp.length()));
@@ -205,7 +205,7 @@ public class IrishSentenceBankDocument {
                   throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
               }
-              if(true) {
+              if (true) {
                 throw new IOException("Ugh: " + orig.toString() + "|" + toks.values().toString());
               }
             } else if (name.equals("translation")) {
