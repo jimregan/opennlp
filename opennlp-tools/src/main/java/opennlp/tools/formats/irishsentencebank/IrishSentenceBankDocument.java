@@ -226,7 +226,7 @@ public class IrishSentenceBankDocument {
               throw new IOException("Unexpected node: " + name);
             }
             IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
-            for (int flexidx = 1; flexidx <= flexes; flexidx++) {
+            for (Integer flexidx : toks.keySet()) {
               String left = toks.get(flexidx);
               int rsize = flx.get(flexidx).size();
               String[] right = new String[rsize];
