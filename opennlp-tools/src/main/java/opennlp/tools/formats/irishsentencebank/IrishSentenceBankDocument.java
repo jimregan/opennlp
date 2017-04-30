@@ -208,6 +208,9 @@ public class IrishSentenceBankDocument {
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
             } else if (name.equals("flex")) {
+              if (true) {
+                throw new IOException("got here");
+              }
               String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
               Integer slot = Integer.parseInt(slottmp);
               if (slot > flexes) {
