@@ -205,12 +205,8 @@ public class IrishSentenceBankDocument {
                   throw new IOException("Unexpected node: " + orignl.item(k).getNodeName());
                 }
               }
-              if (true) {
-                throw new IOException("Ugh: " + orig.toString() + "|" + toks.values().toString());
-              }
             } else if (name.equals("translation")) {
               trans = sentnl.item(j).getFirstChild().getTextContent();
-              throw new IOException("trans " + trans);
             } else if (name.equals("flex")) {
               String slottmp = sentnl.item(j).getAttributes().getNamedItem("slot").getNodeValue();
               Integer slot = Integer.parseInt(slottmp);
@@ -224,7 +220,6 @@ public class IrishSentenceBankDocument {
 
               String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
               flx.get(slot).add(tkn);
-              throw new IOException("WTF? " + flx.size() + flx.keySet().toString() + slot + tkn);
             } else if (name.equals("#text") || name.equals("#comment")) {
               continue;
             } else {
