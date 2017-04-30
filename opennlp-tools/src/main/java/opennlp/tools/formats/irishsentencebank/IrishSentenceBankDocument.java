@@ -163,7 +163,7 @@ public class IrishSentenceBankDocument {
       }
 
       NodeList nl = doc.getDocumentElement().getChildNodes();
-      for (int i = 0; i < nl.getLength(); i++) {
+      for (int i = 0; i <= nl.getLength(); i++) {
         Node sentnode = nl.item(i);
         if (sentnode.getNodeName().equals("sentence")) {
           String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
@@ -230,9 +230,6 @@ public class IrishSentenceBankDocument {
             IrishSentenceBankFlex[] flexa = new IrishSentenceBankFlex[flexes];
             for (int flexidx = 1; flexidx <= flexes; flexidx++) {
               String left = toks.get(flexidx);
-              if (flx == null || flx.get(flexidx) == null) {
-                throw new IOException("WTF? " + flx.size() + flx.keySet().toString());
-              }
               int rsize = flx.get(flexidx).size();
               String[] right = new String[rsize];
               right = flx.get(flexidx).toArray(right);
