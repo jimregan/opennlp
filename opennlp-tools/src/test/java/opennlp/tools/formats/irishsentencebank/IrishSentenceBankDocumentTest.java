@@ -35,12 +35,23 @@ public class IrishSentenceBankDocumentTest {
 
       List<IrishSentenceBankDocument.IrishSentenceBankSentence> sents = doc.getSentences();
 
-      Assert.assertEquals(1, sents.size());
+      Assert.assertEquals(2, sents.size());
 
       IrishSentenceBankDocument.IrishSentenceBankSentence sent1 = sents.get(0);
+      IrishSentenceBankDocument.IrishSentenceBankSentence sent2 = sents.get(1);
 
       Assert.assertEquals("A Dhia, tá mé ag iompar clainne!", sent1.getOriginal());
 
+      IrishSentenceBankDocument.IrishSentenceBankFlex[] flex = sent1.getFlex();
+      Assert.assertEquals(7, flex.length);
+      Assert.assertEquals("A", flex[0].getSurface());
+      Assert.assertArrayEquals(new String[]{"a"}, flex[0].getFlex());
+
+      IrishSentenceBankDocument.IrishSentenceBankFlex[] flex2 = sent2.getFlex();
+      Assert.assertEquals("ón", flex[4].getSurface());
+      Assert.assertArrayEquals(new String[]{"ó", "an"}, flex[4].getFlex());
+
+      Assert.assertEquals("Excuse me, are you from the stone age?", sent2.getTranslation());
     }
   }
 }
