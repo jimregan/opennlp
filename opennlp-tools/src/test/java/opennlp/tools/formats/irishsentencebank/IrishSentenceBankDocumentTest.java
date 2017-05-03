@@ -32,7 +32,7 @@ public class IrishSentenceBankDocumentTest {
   @Test
   public void testParsingSimpleDoc() throws IOException {
     try (InputStream irishSBXmlIn = 
-          IrishSentenceBankDocumentTest.class.getResourceAsStream("irishsentencebank-sample.xml");) {
+          IrishSentenceBankDocumentTest.class.getResourceAsStream("irishsentencebank-sample.xml")) {
 
       IrishSentenceBankDocument doc = IrishSentenceBankDocument.parse(irishSBXmlIn);
 

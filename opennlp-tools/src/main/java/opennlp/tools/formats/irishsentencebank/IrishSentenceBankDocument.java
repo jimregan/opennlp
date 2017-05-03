@@ -158,7 +158,7 @@ public class IrishSentenceBankDocument {
       Document doc = docBuilder.parse(is);
 
       String root = doc.getDocumentElement().getNodeName();
-      if (root != "sentences") {
+      if (!root.equalsIgnoreCase("sentences")) {
         throw new IOException("Expected root node " + root);
       }
 
@@ -168,9 +168,9 @@ public class IrishSentenceBankDocument {
         if (sentnode.getNodeName().equals("sentence")) {
           String src = sentnode.getAttributes().getNamedItem("source").getNodeValue();
           String trans = "";
-          Map<Integer, String> toks = new HashMap<Integer, String>();
-          Map<Integer, List<String>> flx = new HashMap<Integer, List<String>>();
-          List<Span> spans = new ArrayList<Span>();
+          Map<Integer, String> toks = new HashMap<>();
+          Map<Integer, List<String>> flx = new HashMap<>();
+          List<Span> spans = new ArrayList<>();
           NodeList sentnl = sentnode.getChildNodes();
           int flexes = 1;
           StringBuilder orig = new StringBuilder();
@@ -185,7 +185,7 @@ public class IrishSentenceBankDocument {
               }
 
               if (flx.get(slot) == null) {
-                flx.put(slot, new ArrayList<String>());
+                flx.put(slot, new ArrayList<>());
               }
 
               String tkn = sentnl.item(j).getAttributes().getNamedItem("lemma").getNodeValue();
