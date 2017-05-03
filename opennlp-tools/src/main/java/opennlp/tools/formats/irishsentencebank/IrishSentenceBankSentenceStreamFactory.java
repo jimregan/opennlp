@@ -37,7 +37,7 @@ public class IrishSentenceBankSentenceStreamFactory extends AbstractSampleStream
   public static void registerFactory() {
     StreamFactoryRegistry.registerFactory(SentenceSample.class,
         "irishsentencebank", new IrishSentenceBankSentenceStreamFactory(
-        IrishSentenceBankSentenceStreamFactory.Parameters.class));
+        new IrishSentenceBankSentenceStreamFactory(Parameters.class)));
   }
 
   protected <P> IrishSentenceBankSentenceStreamFactory(Class<P> params) {
@@ -58,8 +58,6 @@ public class IrishSentenceBankSentenceStreamFactory extends AbstractSampleStream
       CmdLineUtil.handleCreateObjectStreamError(ex);
     }
 
-    ObjectStream<SentenceSample> samples = new IrishSentenceBankSentenceStream(isbDoc);
-
-    return samples;
+    return new IrishSentenceBankSentenceStream(isbDoc);
   }
 }
