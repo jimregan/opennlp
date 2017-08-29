@@ -13,7 +13,7 @@
                     </front>
                     <body>
                         <div type="article" xml:id="div-1">
-                            <p xml:id="p-1">To krótki tekst w formacie NKJP. Zawiera dwa zdanie.</p>
+                            <p xml:id="p-1">To krótki tekst w formacie NKJP. Zawiera dwa zdania.</p>
                             <p xml:id="p-2">To krótkie zdanie w drugim akapicie.</p>
                         </div>
                     </body>
