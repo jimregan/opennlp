@@ -17,17 +17,13 @@
 
 package opennlp.tools.formats.nkjp;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,6 +32,11 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class NKJPTextDocument {
   Map<String, String> divtypes;
@@ -91,7 +92,8 @@ public class NKJPTextDocument {
           for (int k = 0; k < paranl.getLength(); k++) {
             Node pnode = paranl.item(k);
             String pid = attrib(pnode, "xml:id", true);
-            if (pnode.getChildNodes().getLength() != 1 && !pnode.getFirstChild().getNodeName().equals("#text")) {
+            if (pnode.getChildNodes().getLength() != 1
+                && !pnode.getFirstChild().getNodeName().equals("#text")) {
               throw new IOException("Unexpected content in p element " + pid);
             }
             String ptext = pnode.getTextContent();

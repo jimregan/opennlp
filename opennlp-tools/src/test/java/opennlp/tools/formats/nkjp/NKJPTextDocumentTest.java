@@ -17,11 +17,11 @@
 
 package opennlp.tools.formats.nkjp;
 
-import org.junit.Test;
-
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class NKJPTextDocumentTest {
   @Test
@@ -33,5 +33,4 @@ public class NKJPTextDocumentTest {
       assertEquals("article", doc.divtypes.get("div-1"));
     }
   }
-
 }
