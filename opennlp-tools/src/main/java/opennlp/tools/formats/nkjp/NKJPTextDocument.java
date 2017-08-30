@@ -139,6 +139,22 @@ public class NKJPTextDocument {
   }
 
   /**
+   * Segmentation etc. is done only in relation to the paragraph,
+   * which are unique within a document. This is to simplify
+   * working with the paragraphs within the document
+   * @return a map of paragaph IDs and their text
+   */
+  Map<String, String> getParagraphs() {
+    Map<String, String> paragraphs = new HashMap<>();
+    for(String dockey : texts.keySet()) {
+      for(String divkey : texts.get(dockey).keySet()) {
+        paragraphs.putAll(texts.get(dockey).get(divkey));
+      }
+    }
+    return paragraphs;
+  }
+
+  /**
    * Helper method to get the value of an attribute
    * @param n The node being processed
    * @param attrib The name of the attribute
