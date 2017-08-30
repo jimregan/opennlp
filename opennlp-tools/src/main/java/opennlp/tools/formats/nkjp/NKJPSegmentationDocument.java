@@ -53,23 +53,24 @@ public class NKJPSegmentationDocument {
     }
   }
 
-  public Map<String, Pointer> getSegments() {
+  public Map<String, Map<String, Pointer>> getSegments() {
     return segments;
   }
 
-  Map<String, Pointer> segments;
+  Map<String, Map<String, Pointer>> segments;
 
   NKJPSegmentationDocument() {
     this.segments = new HashMap<>();
   }
 
-  NKJPSegmentationDocument(Map<String, Pointer> segments) {
+  NKJPSegmentationDocument(Map<String, Map<String, Pointer>> segments) {
     this();
     this.segments = segments;
   }
 
   static NKJPSegmentationDocument parse(InputStream is) throws IOException {
-    Map<String, Pointer> segments = new HashMap<>();
+
+    Map<String, Map<String, Pointer>> sentences = new HashMap<>();
 
     try {
       DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -79,56 +80,71 @@ public class NKJPSegmentationDocument {
       XPathFactory xPathfactory = XPathFactory.newInstance();
       XPath xpath = xPathfactory.newXPath();
 
-      final XPathExpression SEG_NODES = xpath.compile("/teiCorpus/TEI/text/body/p/s/seg");
+      final XPathExpression SENT_NODES = xpath.compile("/teiCorpus/TEI/text/body/p/s");
+      final XPathExpression SEG_NODES = xpath.compile("./seg");
 
-      NodeList nl = (NodeList) SEG_NODES.evaluate(doc, XPathConstants.NODESET);
+      NodeList nl = (NodeList) SENT_NODES.evaluate(doc, XPathConstants.NODESET);
 
       for (int i = 0; i < nl.getLength(); i++) {
-        Node n = nl.item(i);
+        Node sentnode = nl.item(i);
 
-        if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
-          throw new IOException("Missing required attributes");
+        String sentid = null;
+        if (sentnode.getAttributes().getNamedItem("xml:id") != null) {
+          sentid = sentnode.getAttributes().getNamedItem("xml:id").getTextContent();
         }
 
-        String id = null;
-        if (n.getAttributes().getNamedItem("xml:id") != null) {
-          id = n.getAttributes().getNamedItem("xml:id").getTextContent();
+        Map<String, Pointer> segments = new HashMap<>();
+        NodeList segnl = (NodeList) SEG_NODES.evaluate(sentnode, XPathConstants.NODESET);
+
+        for(int j = 0; j < segnl.getLength(); j++) {
+          Node n = segnl.item(j);
+
+          if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
+            throw new IOException("Missing required attributes");
+          }
+
+          String id = null;
+          if (n.getAttributes().getNamedItem("xml:id") != null) {
+            id = n.getAttributes().getNamedItem("xml:id").getTextContent();
+          }
+          String ptr = null;
+          if (n.getAttributes().getNamedItem("corresp") != null) {
+            ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
+          }
+          String spacing = "";
+          if (n.getAttributes().getNamedItem("nkjp:nps") != null) {
+            spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
+          }
+
+          if (id == null || ptr == null) {
+            throw new IOException("Missing required attribute");
+          }
+
+          boolean space_after = (ptr != null && ptr.equals("yes"));
+
+          if (!ptr.contains("#") || !ptr.contains("(") || ptr.charAt(ptr.length() - 1) != ')') {
+            throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
+          }
+
+          int docend = ptr.indexOf('#');
+          String document = ptr.substring(0, docend);
+
+          int pointer_start = ptr.indexOf('(') + 1;
+          String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
+
+          if (pieces.length != 3) {
+            throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
+          }
+
+          String docid = pieces[1];
+          int offset = Integer.parseInt(pieces[1]);
+          int length = Integer.parseInt(pieces[2]);
+
+          Pointer pointer = new Pointer(document, docid, offset, length, space_after);
+          segments.put(id, pointer);
         }
-        String ptr = null;
-        if (n.getAttributes().getNamedItem("corresp") != null) {
-          ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
-        }
-        String spacing = "";
-        if (n.getAttributes().getNamedItem("nkjp:nps") != null) {
-          spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
-        }
 
-        if (id == null || ptr == null) {
-          throw new IOException("Missing required attribute");
-        }
-
-        boolean space_after = (ptr != null && ptr.equals("yes"));
-
-        if (!ptr.contains("#") || !ptr.contains("(") || ptr.charAt(ptr.length() - 1) != ')') {
-          throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
-        }
-
-        int docend = ptr.indexOf('#');
-        String document = ptr.substring(0, docend);
-
-        int pointer_start = ptr.indexOf('(') + 1;
-        String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
-
-        if (pieces.length != 3) {
-          throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
-        }
-
-        String docid = pieces[1];
-        int offset = Integer.parseInt(pieces[1]);
-        int length = Integer.parseInt(pieces[2]);
-
-        Pointer pointer = new Pointer(document, docid, offset, length, space_after);
-        segments.put(id, pointer);
+        sentences.put(sentid, segments);
       }
 
     } catch (ParserConfigurationException e) {
@@ -137,6 +153,6 @@ public class NKJPSegmentationDocument {
       throw new IOException("Failed to parse NKJP document", e);
     }
 
-    return new NKJPSegmentationDocument(segments);
+    return new NKJPSegmentationDocument(sentences);
   }
 }

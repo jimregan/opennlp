@@ -32,13 +32,15 @@ public class NKJPSegmentationDocumentTest {
 
       NKJPSegmentationDocument doc = NKJPSegmentationDocument.parse(nkjpSegXmlIn);
 
-      assertEquals(7, doc.getSegments().size());
+      assertEquals(1, doc.getSegments().size());
+
+      assertEquals(7, doc.getSegments().get("segm_1.1-s").size());
 
       String src = "To krótkie zdanie w drugim akapicie.";
 
-      int offset = doc.getSegments().get("segm_1.1-seg").offset;
+      int offset = doc.getSegments().get("segm_1.1-s").get("segm_1.1-seg").offset;
       assertEquals(0, offset);
-      int length = doc.getSegments().get("segm_1.1-seg").length;
+      int length = doc.getSegments().get("segm_1.1-s").get("segm_1.1-seg").length;
       assertEquals(2, length);
       assertEquals("To", src.substring(offset, length));
     }
