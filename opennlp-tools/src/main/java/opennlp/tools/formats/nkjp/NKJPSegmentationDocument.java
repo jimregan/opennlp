@@ -17,20 +17,23 @@
 
 package opennlp.tools.formats.nkjp;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class NKJPSegmentationDocument {
 
@@ -48,6 +51,10 @@ public class NKJPSegmentationDocument {
       this.length = length;
       this.space_after = space_after;
     }
+  }
+
+  public Map<String, Pointer> getSegments() {
+    return segments;
   }
 
   Map<String, Pointer> segments;
@@ -103,7 +110,7 @@ public class NKJPSegmentationDocument {
         int pointer_start = ptr.indexOf('(') + 1;
         String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
 
-        if(pieces.length != 3) {
+        if (pieces.length != 3) {
           throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
         }
 
