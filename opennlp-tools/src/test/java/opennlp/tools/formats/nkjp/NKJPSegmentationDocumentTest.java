@@ -36,8 +36,11 @@ public class NKJPSegmentationDocumentTest {
 
       String src = "To krótkie zdanie w drugim akapicie.";
 
-      assertEquals(0, doc.getSegments().get("segm_1.1-seg").offset);
-      assertEquals(2, doc.getSegments().get("segm_1.1-seg").length);
+      int offset = doc.getSegments().get("segm_1.1-seg").offset;
+      assertEquals(0, offset);
+      int length = doc.getSegments().get("segm_1.1-seg").length;
+      assertEquals(2, length);
+      assertEquals("To", src.substring(offset, length));
     }
   }
 }
