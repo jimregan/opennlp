@@ -90,9 +90,18 @@ public class NKJPSegmentationDocument {
           throw new IOException("Missing required attributes");
         }
 
-        String id = n.getAttributes().getNamedItem("xml:id").getTextContent();
-        String ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
-        String spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
+        String id = null;
+        if (n.getAttributes().getNamedItem("xml:id") != null) {
+          id = n.getAttributes().getNamedItem("xml:id").getTextContent();
+        }
+        String ptr = null;
+        if (n.getAttributes().getNamedItem("corresp") != null) {
+          ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
+        }
+        String spacing = "";
+        if (n.getAttributes().getNamedItem("nkjp:nps") != null) {
+          spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
+        }
 
         if (id == null || ptr == null) {
           throw new IOException("Missing required attribute");
