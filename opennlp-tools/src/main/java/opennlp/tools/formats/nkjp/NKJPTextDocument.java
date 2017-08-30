@@ -26,6 +26,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -104,6 +106,12 @@ public class NKJPTextDocument {
         throw new IOException("Failed to parse NKJP document", e);
     }
     return new NKJPTextDocument(divtypes, texts);
+  }
+
+  static NKJPTextDocument parse(File file) throws IOException {
+    try (InputStream in = new FileInputStream(file)) {
+      return parse(in);
+    }
   }
 
   /**
