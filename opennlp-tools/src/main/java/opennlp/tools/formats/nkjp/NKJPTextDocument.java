@@ -22,16 +22,20 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 public class NKJPTextDocument {
   Map<String, String> divtypes;
@@ -121,13 +125,13 @@ public class NKJPTextDocument {
    * @throws Exception
    */
   private static String attrib(Node n, String attrib, boolean required) throws IOException {
-    if(required && (n.getAttributes() == null || n.getAttributes().getLength() == 0)) {
+    if (required && (n.getAttributes() == null || n.getAttributes().getLength() == 0)) {
       throw new IOException("Missing required attributes in node " + n.getNodeName());
     }
-    if(n.getAttributes().getNamedItem(attrib) != null) {
+    if (n.getAttributes().getNamedItem(attrib) != null) {
       return n.getAttributes().getNamedItem(attrib).getTextContent();
     } else {
-      if(required) {
+      if (required) {
         throw new IOException("Required attribute \"" + attrib + "\" missing in node " + n.getNodeName());
       } else {
         return null;
