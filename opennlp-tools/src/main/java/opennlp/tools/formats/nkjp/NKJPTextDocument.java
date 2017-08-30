@@ -40,18 +40,22 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class NKJPTextDocument {
+
   Map<String, String> divtypes;
+
   Map<String, Map<String, Map<String, String>>> texts;
 
   NKJPTextDocument() {
     divtypes = new HashMap<>();
     texts = new HashMap<>();
   }
+
   NKJPTextDocument(Map<String, String> divtypes, Map<String, Map<String, Map<String, String>>> texts) {
     this();
     this.divtypes = divtypes;
     this.texts = texts;
   }
+
   public static NKJPTextDocument parse(InputStream is) throws IOException {
     Map<String, String> divtypes = new HashMap<>();
     Map<String, Map<String, Map<String, String>>> texts = new HashMap<>();
@@ -66,16 +70,18 @@ public class NKJPTextDocument {
 
       final XPathExpression TEXT_NODES = xpath.compile("/teiCorpus/TEI/text/group/text");
       final XPathExpression DIV_NODES = xpath.compile("./body/div");
-      final XPathExpression PARA_NODES = xpath.compile("./p");
+      final XPathExpression PARA_NODES = xpath.compile("./p|./ab");
 
       doc.getDocumentElement().normalize();
       String root = doc.getDocumentElement().getNodeName();
+
       if (!root.equalsIgnoreCase("teiCorpus")) {
         throw new IOException("Expected root node " + root);
       }
 
       String current_text = "";
       NodeList textnl = (NodeList) TEXT_NODES.evaluate(doc, XPathConstants.NODESET);
+
       for (int i = 0; i < textnl.getLength(); i++) {
         Node textnode = textnl.item(i);
         current_text = attrib(textnode, "xml:id", true);
@@ -90,6 +96,7 @@ public class NKJPTextDocument {
 
           Map<String, String> current_paras = new HashMap<>();
           NodeList paranl = (NodeList) PARA_NODES.evaluate(divnode, XPathConstants.NODESET);
+
           for (int k = 0; k < paranl.getLength(); k++) {
             Node pnode = paranl.item(k);
             String pid = attrib(pnode, "xml:id", true);
@@ -130,6 +137,7 @@ public class NKJPTextDocument {
   Map<String, Map<String, Map<String, String>>> getTexts() {
     return Collections.unmodifiableMap(this.texts);
   }
+
   /**
    * Helper method to get the value of an attribute
    * @param n The node being processed
