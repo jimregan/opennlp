@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +81,7 @@ public class NKJPTextDocument {
         current_text = attrib(textnode, "xml:id", true);
 
         Map<String, Map<String, String>> current_divs = new HashMap<>();
-        NodeList divnl = (NodeList) DIV_NODES.evaluate(doc, XPathConstants.NODESET);
+        NodeList divnl = (NodeList) DIV_NODES.evaluate(textnode, XPathConstants.NODESET);
         for (int j = 0; j < divnl.getLength(); j++) {
           Node divnode = divnl.item(j);
           String divtype = attrib(divnode, "type", true);
@@ -88,19 +89,23 @@ public class NKJPTextDocument {
           divtypes.put(divid, divtype);
 
           Map<String, String> current_paras = new HashMap<>();
-          NodeList paranl = (NodeList) PARA_NODES.evaluate(doc, XPathConstants.NODESET);
+          NodeList paranl = (NodeList) PARA_NODES.evaluate(divnode, XPathConstants.NODESET);
           for (int k = 0; k < paranl.getLength(); k++) {
             Node pnode = paranl.item(k);
             String pid = attrib(pnode, "xml:id", true);
+
             if (pnode.getChildNodes().getLength() != 1
                 && !pnode.getFirstChild().getNodeName().equals("#text")) {
               throw new IOException("Unexpected content in p element " + pid);
             }
+
             String ptext = pnode.getTextContent();
             current_paras.put(pid, ptext);
           }
+
           current_divs.put(divid, current_paras);
         }
+
         texts.put(current_text, current_divs);
       }
 
@@ -118,6 +123,13 @@ public class NKJPTextDocument {
     }
   }
 
+  Map<String, String> getDivtypes() {
+    return Collections.unmodifiableMap(this.divtypes);
+  }
+
+  Map<String, Map<String, Map<String, String>>> getTexts() {
+    return Collections.unmodifiableMap(this.texts);
+  }
   /**
    * Helper method to get the value of an attribute
    * @param n The node being processed

@@ -28,9 +28,18 @@ public class NKJPTextDocumentTest {
   public void testParsingSimpleDoc() throws Exception {
     try (InputStream nkjpTextXmlIn =
            NKJPTextDocumentTest.class.getResourceAsStream("text_structure.xml")) {
+
       NKJPTextDocument doc = NKJPTextDocument.parse(nkjpTextXmlIn);
-      assertEquals(1, doc.divtypes.size());
-      assertEquals("article", doc.divtypes.get("div-1"));
+
+      assertEquals(1, doc.getDivtypes().size());
+      assertEquals("article", doc.getDivtypes().get("div-1"));
+
+      assertEquals(1, doc.getTexts().size());
+      assertEquals(1, doc.getTexts().get("text-1").size());
+      assertEquals(2, doc.getTexts().get("text-1").get("div-1").size());
+
+      String exp = "To krótki tekst w formacie NKJP. Zawiera dwa zdania.";
+      assertEquals(exp, doc.getTexts().get("text-1").get("div-1").get("p-1"));
     }
   }
 }
