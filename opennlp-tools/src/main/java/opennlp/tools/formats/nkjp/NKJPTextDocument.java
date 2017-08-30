@@ -18,15 +18,14 @@
 package opennlp.tools.formats.nkjp;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,13 +35,20 @@ import java.util.Map;
 
 public class NKJPTextDocument {
   Map<String, String> divtypes;
+  Map<String, Map<String, Map<String, String>>> texts;
 
   NKJPTextDocument() {
     divtypes = new HashMap<>();
+    texts = new HashMap<>();
+  }
+  NKJPTextDocument(Map<String, String> divtypes, Map<String, Map<String, Map<String, String>>> texts) {
+    this();
+    this.divtypes = divtypes;
+    this.texts = texts;
   }
   public static NKJPTextDocument parse(InputStream is) throws IOException {
-    NKJPTextDocument document = new NKJPTextDocument();
     Map<String, String> divtypes = new HashMap<>();
+    Map<String, Map<String, Map<String, String>>> texts = new HashMap<>();
 
     try {
       DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -52,20 +58,74 @@ public class NKJPTextDocument {
       XPathFactory xPathfactory = XPathFactory.newInstance();
       XPath xpath = xPathfactory.newXPath();
 
+      final XPathExpression TEXT_NODES = xpath.compile("/teiCorpus/TEI/text/group/text");
+      final XPathExpression DIV_NODES = xpath.compile("./body/div");
+      final XPathExpression PARA_NODES = xpath.compile("./p");
+
       doc.getDocumentElement().normalize();
       String root = doc.getDocumentElement().getNodeName();
       if (!root.equalsIgnoreCase("teiCorpus")) {
           throw new IOException("Expected root node " + root);
       }
 
-      XPathExpression expr = xpath.compile("/teiCorpus/TEI/text/group/text");
+      String current_text = "";
+      NodeList textnl = (NodeList) TEXT_NODES.evaluate(doc, XPathConstants.NODESET);
+      for (int i = 0; i < textnl.getLength(); i++) {
+        Node textnode = textnl.item(i);
+        current_text = attrib(textnode, "xml:id", true);
 
+        Map<String, Map<String, String>> current_divs = new HashMap<>();
+        NodeList divnl = (NodeList) DIV_NODES.evaluate(doc, XPathConstants.NODESET);
+        for (int j = 0; j < divnl.getLength(); j++) {
+          Node divnode = divnl.item(j);
+          String divtype = attrib(divnode, "type", true);
+          String divid = attrib(divnode, "xml:id", true);
+          divtypes.put(divid, divtype);
+
+          Map<String, String> current_paras = new HashMap<>();
+          NodeList paranl = (NodeList) PARA_NODES.evaluate(doc, XPathConstants.NODESET);
+          for (int k = 0; k < paranl.getLength(); k++) {
+            Node pnode = paranl.item(k);
+            String pid = attrib(pnode, "xml:id", true);
+            if (pnode.getChildNodes().getLength() != 1 && !pnode.getFirstChild().getNodeName().equals("#text")) {
+              throw new IOException("Unexpected content in p element " + pid);
+            }
+            String ptext = pnode.getTextContent();
+            current_paras.put(pid, ptext);
+          }
+          current_divs.put(divid, current_paras);
+        }
+        texts.put(current_text, current_divs);
+      }
 
     } catch (ParserConfigurationException e) {
         throw new IllegalStateException(e);
     } catch (SAXException | XPathExpressionException | IOException e) {
         throw new IOException("Failed to parse NKJP document", e);
     }
-    return document;
+    return new NKJPTextDocument(divtypes, texts);
+  }
+
+  /**
+   * Helper method to get the value of an attribute
+   * @param n The node being processed
+   * @param attrib The name of the attribute
+   * @param required Whether or not the attribute is required
+   * @return The value of the attribute, or null if not required and not present
+   * @throws Exception
+   */
+  private static String attrib(Node n, String attrib, boolean required) throws IOException {
+    if(required && (n.getAttributes() == null || n.getAttributes().getLength() == 0)) {
+      throw new IOException("Missing required attributes in node " + n.getNodeName());
+    }
+    if(n.getAttributes().getNamedItem(attrib) != null) {
+      return n.getAttributes().getNamedItem(attrib).getTextContent();
+    } else {
+      if(required) {
+        throw new IOException("Required attribute \"" + attrib + "\" missing in node " + n.getNodeName());
+      } else {
+        return null;
+      }
+    }
   }
 }
