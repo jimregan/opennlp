@@ -33,6 +33,11 @@ public class NKJPSegmentationDocumentTest {
       NKJPSegmentationDocument doc = NKJPSegmentationDocument.parse(nkjpSegXmlIn);
 
       assertEquals(7, doc.getSegments().size());
+
+      String src = "To krótkie zdanie w drugim akapicie.";
+
+      assertEquals(0, doc.getSegments().get("segm_1.1-seg").offset);
+      assertEquals(2, doc.getSegments().get("segm_1.1-seg").length);
     }
   }
 }
