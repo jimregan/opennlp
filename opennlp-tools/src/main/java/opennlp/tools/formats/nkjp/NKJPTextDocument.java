@@ -69,7 +69,7 @@ public class NKJPTextDocument {
       doc.getDocumentElement().normalize();
       String root = doc.getDocumentElement().getNodeName();
       if (!root.equalsIgnoreCase("teiCorpus")) {
-          throw new IOException("Expected root node " + root);
+        throw new IOException("Expected root node " + root);
       }
 
       String current_text = "";
@@ -103,9 +103,9 @@ public class NKJPTextDocument {
       }
 
     } catch (ParserConfigurationException e) {
-        throw new IllegalStateException(e);
+      throw new IllegalStateException(e);
     } catch (SAXException | XPathExpressionException | IOException e) {
-        throw new IOException("Failed to parse NKJP document", e);
+      throw new IOException("Failed to parse NKJP document", e);
     }
     return new NKJPTextDocument(divtypes, texts);
   }
