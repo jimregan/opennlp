@@ -17,6 +17,8 @@
 
 package opennlp.tools.formats.nkjp;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -154,5 +156,11 @@ public class NKJPSegmentationDocument {
     }
 
     return new NKJPSegmentationDocument(sentences);
+  }
+
+  static NKJPSegmentationDocument parse(File file) throws IOException {
+    try (InputStream in = new FileInputStream(file)) {
+      return parse(in);
+    }
   }
 }
