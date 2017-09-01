@@ -68,7 +68,7 @@ public class NKJPSegmentationDocument {
     this.segments = segments;
   }
 
-  static NKJPSegmentationDocument parse(InputStream is) throws IOException {
+  public static NKJPSegmentationDocument parse(InputStream is) throws IOException {
 
     Map<String, Map<String, Pointer>> sentences = new HashMap<>();
 
