@@ -37,6 +37,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import opennlp.tools.util.Span;
+
 public class NKJPSegmentationDocument {
 
   public static class Pointer {
@@ -52,6 +54,10 @@ public class NKJPSegmentationDocument {
       this.offset = offset;
       this.length = length;
       this.space_after = space_after;
+    }
+
+    public Span toSpan() {
+      return new Span(this.offset, this.offset + this.length);
     }
   }
 
