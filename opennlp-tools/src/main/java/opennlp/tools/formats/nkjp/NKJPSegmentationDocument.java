@@ -128,7 +128,7 @@ public class NKJPSegmentationDocument {
             throw new IOException("Missing required attribute");
           }
 
-          boolean space_after = (ptr != null && ptr.equals("yes"));
+          boolean space_after = (ptr.equals("yes"));
 
           if (!ptr.contains("#") || !ptr.contains("(") || ptr.charAt(ptr.length() - 1) != ')') {
             throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
