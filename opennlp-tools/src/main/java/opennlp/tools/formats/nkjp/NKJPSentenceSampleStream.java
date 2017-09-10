@@ -18,7 +18,6 @@
 package opennlp.tools.formats.nkjp;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,8 +28,6 @@ import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.Span;
 
 public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
-  private Map<String, String> paragraphs;
-
   private final NKJPSegmentationDocument segments;
 
   private final NKJPTextDocument text;
@@ -40,7 +37,6 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
   NKJPSentenceSampleStream(NKJPSegmentationDocument segments, NKJPTextDocument text) {
     this.segments = segments;
     this.text = text;
-    this.paragraphs = new HashMap<>();
     reset();
   }
 
@@ -57,19 +53,24 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
       boolean started = false;
       String lastParagraphId = "";
       String currentParagraph = "";
+      System.err.println("Sentence start " + segment.getKey());
 
       for (String s : segment.getValue().keySet()) {
         NKJPSegmentationDocument.Pointer currentPointer = segment.getValue().get(s);
+        System.err.println("id " + currentPointer.id + " para " + paragraphs.get(currentPointer.id));
         currentParagraph = paragraphs.get(currentPointer.id);
         Span currentSpan = currentPointer.toSpan();
+        System.err.println("for " + currentSpan);
 
         if (!started) {
+          System.err.println("STARTED");
           start = currentSpan.getStart();
           started = true;
           lastParagraphId = currentPointer.id;
         }
 
         if (!lastParagraphId.equals(currentPointer.id)) {
+          System.err.println("change: " + lastParagraphId + " to " + currentPointer.id);
           int new_start = sentencesString.length();
           sentencesString.append(currentParagraph.substring(start, end));
           int new_end = sentencesString.length();
@@ -85,9 +86,17 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
       }
 
       int new_start = sentencesString.length();
+      System.err.println("sent: "
+          + " s " + start + " e " + end + currentParagraph);
       sentencesString.append(currentParagraph.substring(start, end));
       int new_end = sentencesString.length();
       sentenceSpans.add(new Span(new_start, new_end));
+      System.err.println("so far: " + sentencesString.toString());
+    }
+
+    // end of stream is reached, indicate that with null return value
+    if (sentenceSpans.size() == 0) {
+      return null;
     }
 
     return new SentenceSample(sentencesString.toString(),
