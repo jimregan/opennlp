@@ -110,59 +110,9 @@ public class NKJPSegmentationDocument {
 
         for (int j = 0; j < segnl.getLength(); j++) {
           Node n = segnl.item(j);
+          Pointer pointer = fromSeg(n);
 
-          if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
-            throw new IOException("Missing required attributes");
-          }
-
-          String id = null;
-          if (n.getAttributes().getNamedItem("xml:id") != null) {
-            id = n.getAttributes().getNamedItem("xml:id").getTextContent();
-          }
-          String ptr = null;
-          if (n.getAttributes().getNamedItem("corresp") != null) {
-            ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
-          }
-          String spacing = "";
-          if (n.getAttributes().getNamedItem("nkjp:nps") != null) {
-            spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
-          }
-
-          if (id == null || ptr == null) {
-            throw new IOException("Missing required attribute");
-          }
-
-          boolean space_after = (ptr.equals("yes"));
-
-          if (!ptr.contains("#") || !ptr.contains("(") || ptr.charAt(ptr.length() - 1) != ')') {
-            throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
-          }
-
-          int docend = ptr.indexOf('#');
-          String document = ptr.substring(0, docend);
-
-          int pointer_start = ptr.indexOf('(') + 1;
-          String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
-
-          if (pieces.length < 3 || pieces.length > 4) {
-            throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
-          }
-
-          String docid = pieces[0];
-          int offset = 0;
-          int length = 0;
-          if (pieces.length == 3) {
-            offset = Integer.parseInt(pieces[1]);
-            length = Integer.parseInt(pieces[2]);
-          } else {
-            int os1 = Integer.parseInt(pieces[1]);
-            int os2 = Integer.parseInt(pieces[2]);
-            offset = (os1 * 1000) + os2;
-            length = Integer.parseInt(pieces[3]);
-          }
-
-          Pointer pointer = new Pointer(document, docid, offset, length, space_after);
-          segments.put(id, pointer);
+          segments.put(pointer.id, pointer);
         }
 
         sentences.put(sentid, segments);
@@ -173,6 +123,59 @@ public class NKJPSegmentationDocument {
     }
 
     return new NKJPSegmentationDocument(sentences);
+  }
+  static Pointer fromSeg(Node n) throws IOException {
+    if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
+      throw new IOException("Missing required attributes");
+    }
+
+    String id = null;
+    if (n.getAttributes().getNamedItem("xml:id") != null) {
+      id = n.getAttributes().getNamedItem("xml:id").getTextContent();
+    }
+    String ptr = null;
+    if (n.getAttributes().getNamedItem("corresp") != null) {
+      ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
+    }
+    String spacing = "";
+    if (n.getAttributes().getNamedItem("nkjp:nps") != null) {
+      spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
+    }
+
+    if (id == null || ptr == null) {
+      throw new IOException("Missing required attribute");
+    }
+
+    boolean space_after = (ptr.equals("yes"));
+
+    if (!ptr.contains("#") || !ptr.contains("(") || ptr.charAt(ptr.length() - 1) != ')') {
+      throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
+    }
+
+    int docend = ptr.indexOf('#');
+    String document = ptr.substring(0, docend);
+
+    int pointer_start = ptr.indexOf('(') + 1;
+    String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
+
+    if (pieces.length < 3 || pieces.length > 4) {
+      throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
+    }
+
+    String docid = pieces[0];
+    int offset = 0;
+    int length = 0;
+    if (pieces.length == 3) {
+      offset = Integer.parseInt(pieces[1]);
+      length = Integer.parseInt(pieces[2]);
+    } else {
+      int os1 = Integer.parseInt(pieces[1]);
+      int os2 = Integer.parseInt(pieces[2]);
+      offset = (os1 * 1000) + os2;
+      length = Integer.parseInt(pieces[3]);
+    }
+
+    return new Pointer(document, docid, offset, length, space_after);
   }
 
   static NKJPSegmentationDocument parse(File file) throws IOException {
