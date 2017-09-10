@@ -138,7 +138,7 @@ public class NKJPSegmentationDocument {
           int pointer_start = ptr.indexOf('(') + 1;
           String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
 
-          if (pieces.length < 3 && pieces.length > 4) {
+          if (pieces.length < 3 || pieces.length > 4) {
             throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
           }
 
