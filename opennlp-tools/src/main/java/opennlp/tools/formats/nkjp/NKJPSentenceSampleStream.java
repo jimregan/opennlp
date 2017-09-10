@@ -62,13 +62,13 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
         currentParagraph = paragraphs.get(currentPointer.id);
         Span currentSpan = currentPointer.toSpan();
 
-        if(!started) {
+        if (!started) {
           start = currentSpan.getStart();
           started = true;
           lastParagraphId = currentPointer.id;
         }
 
-        if(!lastParagraphId.equals(currentPointer.id)) {
+        if (!lastParagraphId.equals(currentPointer.id)) {
           int new_start = sentencesString.length();
           sentencesString.append(currentParagraph.substring(start, end));
           int new_end = sentencesString.length();

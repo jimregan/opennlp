@@ -32,13 +32,13 @@ public class NKJPSentenceSampleStreamFactory extends AbstractSampleStreamFactory
 
   interface Parameters extends BasicFormatParams {
     @ArgumentParser.ParameterDescription(valueName = "text",
-      description = "file containing NKJP text")
+        description = "file containing NKJP text")
     File getTextFile();
   }
 
   public static void registerFactory() {
     StreamFactoryRegistry.registerFactory(SentenceSample.class,
-      "nkjp", new NKJPSentenceSampleStreamFactory(
+        "nkjp", new NKJPSentenceSampleStreamFactory(
         NKJPSentenceSampleStreamFactory.Parameters.class));
   }
 

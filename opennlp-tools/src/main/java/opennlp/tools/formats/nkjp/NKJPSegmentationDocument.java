@@ -102,7 +102,7 @@ public class NKJPSegmentationDocument {
         Map<String, Pointer> segments = new HashMap<>();
         NodeList segnl = (NodeList) SEG_NODES.evaluate(sentnode, XPathConstants.NODESET);
 
-        for(int j = 0; j < segnl.getLength(); j++) {
+        for (int j = 0; j < segnl.getLength(); j++) {
           Node n = segnl.item(j);
 
           if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
