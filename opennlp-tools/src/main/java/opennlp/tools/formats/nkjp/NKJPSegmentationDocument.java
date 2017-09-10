@@ -138,13 +138,22 @@ public class NKJPSegmentationDocument {
           int pointer_start = ptr.indexOf('(') + 1;
           String[] pieces = ptr.substring(pointer_start, ptr.length() - 1).split(",");
 
-          if (pieces.length != 3) {
+          if (pieces.length < 3 && pieces.length > 4) {
             throw new IOException("String " + ptr + " does not appear to be a valid NKJP corresp attribute");
           }
 
-          String docid = pieces[1];
-          int offset = Integer.parseInt(pieces[1]);
-          int length = Integer.parseInt(pieces[2]);
+          String docid = pieces[0];
+          int offset = 0;
+          int length = 0;
+          if (pieces.length == 3) {
+            offset = Integer.parseInt(pieces[1]);
+            length = Integer.parseInt(pieces[2]);
+          } else {
+            int os1 = Integer.parseInt(pieces[1]);
+            int os2 = Integer.parseInt(pieces[2]);
+            offset = (os1 * 1000) + os2;
+            length = Integer.parseInt(pieces[3]);
+          }
 
           Pointer pointer = new Pointer(document, docid, offset, length, space_after);
           segments.put(id, pointer);
