@@ -93,7 +93,8 @@ public class NKJPSegmentationDocument {
       XPath xpath = xPathfactory.newXPath();
 
       final XPathExpression SENT_NODES = xpath.compile("/teiCorpus/TEI/text/body/p/s");
-      final XPathExpression SEG_NODES = xpath.compile("./seg");
+      final XPathExpression SEG_NODES = xpath.compile("./seg|./choice");
+      final XPathExpression SEG_NODES_ONLY = xpath.compile("./seg");
 
       NodeList nl = (NodeList) SENT_NODES.evaluate(doc, XPathConstants.NODESET);
 
@@ -109,10 +110,36 @@ public class NKJPSegmentationDocument {
         NodeList segnl = (NodeList) SEG_NODES.evaluate(sentnode, XPathConstants.NODESET);
 
         for (int j = 0; j < segnl.getLength(); j++) {
+          boolean have_seg = false;
+          if (have_seg) {
+            continue;
+          }
           Node n = segnl.item(j);
-          Pointer pointer = fromSeg(n);
-
-          segments.put(pointer.id, pointer);
+          if (n.getNodeName().equals("seg")) {
+            Pointer pointer = fromSeg(n);
+            segments.put(pointer.id, pointer);
+          } else if (n.getNodeName().equals("choice")) {
+            NodeList choices = n.getChildNodes();
+            for (int k = 0; k < choices.getLength(); k++) {
+              if (choices.item(k).getNodeName().equals("nkjp:paren")) {
+                if (!checkRejectedParen(choices.item(k))) {
+                  NodeList paren_segs = (NodeList) SEG_NODES_ONLY.evaluate(choices.item(k),
+                      XPathConstants.NODESET);
+                  have_seg = true;
+                  for (int l = 0; l < paren_segs.getLength(); l++) {
+                    Pointer pointer = fromSeg(paren_segs.item(l));
+                    segments.put(pointer.id, pointer);
+                  }
+                }
+              } else if (choices.item(k).getNodeName().equals("seg")) {
+                if (!checkRejected(choices.item(k))) {
+                  have_seg = true;
+                  Pointer pointer = fromSeg(choices.item(k));
+                  segments.put(pointer.id, pointer);
+                }
+              }
+            }
+          }
         }
 
         sentences.put(sentid, segments);
@@ -124,6 +151,34 @@ public class NKJPSegmentationDocument {
 
     return new NKJPSegmentationDocument(sentences);
   }
+
+  static boolean checkRejected(Node n) {
+    if (n.getAttributes() == null) {
+      return false;
+    }
+    if (n.getAttributes().getNamedItem("nkjp:rejected") == null) {
+      return false;
+    }
+    String rejected = n.getAttributes().getNamedItem("nkjp:rejected").getTextContent();
+    return rejected.equals("true");
+  }
+
+  static boolean checkRejectedParen(Node n) {
+    if (n.getChildNodes().getLength() == 0) {
+      return false;
+    } else {
+      for (int i = 0; i < n.getChildNodes().getLength(); i++) {
+        Node m = n.getChildNodes().item(i);
+        if (m.getNodeName().equals("seg")) {
+          if (!checkRejected(m)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+  }
+
   static Pointer fromSeg(Node n) throws IOException {
     if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
       throw new IOException("Missing required attributes");
