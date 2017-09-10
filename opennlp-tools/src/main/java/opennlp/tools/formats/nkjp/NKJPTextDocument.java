@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -38,6 +36,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import opennlp.tools.util.XmlUtil;
 
 public class NKJPTextDocument {
 
@@ -61,8 +61,7 @@ public class NKJPTextDocument {
     Map<String, Map<String, Map<String, String>>> texts = new HashMap<>();
 
     try {
-      DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+      DocumentBuilder docBuilder = XmlUtil.createDocumentBuilder();;
       Document doc = docBuilder.parse(is);
 
       XPathFactory xPathfactory = XPathFactory.newInstance();
@@ -116,8 +115,6 @@ public class NKJPTextDocument {
         texts.put(current_text, current_divs);
       }
 
-    } catch (ParserConfigurationException e) {
-      throw new IllegalStateException(e);
     } catch (SAXException | XPathExpressionException | IOException e) {
       throw new IOException("Failed to parse NKJP document", e);
     }

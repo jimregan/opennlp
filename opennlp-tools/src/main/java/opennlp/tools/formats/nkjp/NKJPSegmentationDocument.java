@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -38,6 +36,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import opennlp.tools.util.Span;
+import opennlp.tools.util.XmlUtil;
 
 public class NKJPSegmentationDocument {
 
@@ -81,8 +80,7 @@ public class NKJPSegmentationDocument {
     Map<String, Map<String, Pointer>> sentences = new HashMap<>();
 
     try {
-      DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+      DocumentBuilder docBuilder = XmlUtil.createDocumentBuilder();;
       Document doc = docBuilder.parse(is);
 
       XPathFactory xPathfactory = XPathFactory.newInstance();
@@ -155,8 +153,6 @@ public class NKJPSegmentationDocument {
         sentences.put(sentid, segments);
       }
 
-    } catch (ParserConfigurationException e) {
-      throw new IllegalStateException(e);
     } catch (SAXException | XPathExpressionException | IOException e) {
       throw new IOException("Failed to parse NKJP document", e);
     }
