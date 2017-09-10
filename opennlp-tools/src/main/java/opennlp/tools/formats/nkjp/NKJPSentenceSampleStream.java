@@ -57,6 +57,7 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
       boolean started = false;
       String lastParagraphId = "";
       String currentParagraph = "";
+
       for (String s : segment.getValue().keySet()) {
         NKJPSegmentationDocument.Pointer currentPointer = segment.getValue().get(s);
         currentParagraph = paragraphs.get(currentPointer.id);
@@ -88,7 +89,9 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
       int new_end = sentencesString.length();
       sentenceSpans.add(new Span(new_start, new_end));
     }
-    return null;
+
+    return new SentenceSample(sentencesString.toString(),
+      sentenceSpans.toArray(new Span[sentenceSpans.size()]));
   }
 
   @Override
