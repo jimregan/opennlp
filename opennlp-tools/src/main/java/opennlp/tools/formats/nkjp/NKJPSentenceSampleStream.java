@@ -52,13 +52,41 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
 
     while (segmentIt.hasNext()) {
       Map.Entry<String, Map<String, NKJPSegmentationDocument.Pointer>> segment = segmentIt.next();
+      int start = 0;
+      int end = 0;
+      boolean started = false;
+      String lastParagraphId = "";
+      String currentParagraph = "";
       for (String s : segment.getValue().keySet()) {
         NKJPSegmentationDocument.Pointer currentPointer = segment.getValue().get(s);
-        String currentParagraph = paragraphs.get(currentPointer.id);
+        currentParagraph = paragraphs.get(currentPointer.id);
         Span currentSpan = currentPointer.toSpan();
-        String currentSentence = currentParagraph.substring(currentSpan.getStart(), currentSpan.getEnd());
 
+        if(!started) {
+          start = currentSpan.getStart();
+          started = true;
+          lastParagraphId = currentPointer.id;
+        }
+
+        if(!lastParagraphId.equals(currentPointer.id)) {
+          int new_start = sentencesString.length();
+          sentencesString.append(currentParagraph.substring(start, end));
+          int new_end = sentencesString.length();
+          sentenceSpans.add(new Span(new_start, new_end));
+          sentencesString.append(' ');
+
+          start = currentSpan.getStart();
+          end = currentSpan.getEnd();
+          lastParagraphId = currentPointer.id;
+        } else {
+          end = currentSpan.getEnd();
+        }
       }
+
+      int new_start = sentencesString.length();
+      sentencesString.append(currentParagraph.substring(start, end));
+      int new_end = sentencesString.length();
+      sentenceSpans.add(new Span(new_start, new_end));
     }
     return null;
   }
