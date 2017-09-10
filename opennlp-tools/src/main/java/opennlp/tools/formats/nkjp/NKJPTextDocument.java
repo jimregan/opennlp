@@ -67,7 +67,7 @@ public class NKJPTextDocument {
       XPathFactory xPathfactory = XPathFactory.newInstance();
       XPath xpath = xPathfactory.newXPath();
 
-      final XPathExpression TEXT_NODES = xpath.compile("/teiCorpus/TEI/text/group/text");
+      final XPathExpression TEXT_NODES = xpath.compile("/teiCorpus/TEI/text/group/text|/teiCorpus/TEI/text");
       final XPathExpression DIV_NODES = xpath.compile("./body/div");
       final XPathExpression PARA_NODES = xpath.compile("./p|./ab");
 
