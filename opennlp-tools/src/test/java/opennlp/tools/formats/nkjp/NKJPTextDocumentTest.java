@@ -18,6 +18,7 @@
 package opennlp.tools.formats.nkjp;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -40,6 +41,17 @@ public class NKJPTextDocumentTest {
 
       String exp = "To krótki tekst w formacie NKJP. Zawiera dwa zdania.";
       assertEquals(exp, doc.getTexts().get("text-1").get("div-1").get("p-1"));
+    }
+  }
+
+  @Test
+  public void testGetParagraphs() throws Exception {
+    try (InputStream nkjpTextXmlIn =
+           NKJPTextDocumentTest.class.getResourceAsStream("text_structure.xml")) {
+
+      NKJPTextDocument doc = NKJPTextDocument.parse(nkjpTextXmlIn);
+      Map<String, String> paras = doc.getParagraphs();
+      assertEquals("To krótkie zdanie w drugim akapicie.", paras.get("ab-1"));
     }
   }
 }
