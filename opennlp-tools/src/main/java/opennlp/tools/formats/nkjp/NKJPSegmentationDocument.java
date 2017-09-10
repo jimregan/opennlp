@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.xpath.XPath;
@@ -72,7 +72,7 @@ public class NKJPSegmentationDocument {
   Map<String, Map<String, Pointer>> segments;
 
   NKJPSegmentationDocument() {
-    this.segments = new HashMap<>();
+    this.segments = new LinkedHashMap<>();
   }
 
   NKJPSegmentationDocument(Map<String, Map<String, Pointer>> segments) {
@@ -82,7 +82,7 @@ public class NKJPSegmentationDocument {
 
   public static NKJPSegmentationDocument parse(InputStream is) throws IOException {
 
-    Map<String, Map<String, Pointer>> sentences = new HashMap<>();
+    Map<String, Map<String, Pointer>> sentences = new LinkedHashMap<>();
 
     try {
       DocumentBuilder docBuilder = XmlUtil.createDocumentBuilder();;
@@ -104,7 +104,7 @@ public class NKJPSegmentationDocument {
           sentid = sentnode.getAttributes().getNamedItem("xml:id").getTextContent();
         }
 
-        Map<String, Pointer> segments = new HashMap<>();
+        Map<String, Pointer> segments = new LinkedHashMap<>();
         NodeList segnl = (NodeList) SEG_NODES.evaluate(sentnode, XPathConstants.NODESET);
 
         for (int j = 0; j < segnl.getLength(); j++) {
