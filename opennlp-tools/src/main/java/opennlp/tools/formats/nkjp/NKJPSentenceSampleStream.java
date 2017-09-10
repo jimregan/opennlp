@@ -29,7 +29,7 @@ import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.Span;
 
 public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
-  Map<String, String> paragraphs;
+  private Map<String, String> paragraphs;
 
   private final NKJPSegmentationDocument segments;
 
