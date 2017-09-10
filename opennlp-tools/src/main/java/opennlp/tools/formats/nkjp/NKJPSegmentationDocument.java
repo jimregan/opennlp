@@ -58,6 +58,11 @@ public class NKJPSegmentationDocument {
     public Span toSpan() {
       return new Span(this.offset, this.offset + this.length);
     }
+
+    @Override
+    public String toString() {
+      return doc + "#string-range(" + id + "," + Integer.toString(offset) + "," + Integer.toString(length) + ")";
+    }
   }
 
   public Map<String, Map<String, Pointer>> getSegments() {
