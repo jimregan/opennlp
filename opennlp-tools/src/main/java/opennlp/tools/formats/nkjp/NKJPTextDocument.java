@@ -145,7 +145,9 @@ public class NKJPTextDocument {
     Map<String, String> paragraphs = new HashMap<>();
     for (String dockey : texts.keySet()) {
       for (String divkey : texts.get(dockey).keySet()) {
-        paragraphs.putAll(texts.get(dockey).get(divkey));
+        for (String pkey : texts.get(dockey).get(divkey).keySet()) {
+          paragraphs.put(pkey, texts.get(dockey).get(divkey).get(pkey));
+        }
       }
     }
     return paragraphs;
