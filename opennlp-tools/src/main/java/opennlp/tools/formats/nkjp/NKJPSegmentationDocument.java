@@ -110,22 +110,25 @@ public class NKJPSegmentationDocument {
         NodeList segnl = (NodeList) SEG_NODES.evaluate(sentnode, XPathConstants.NODESET);
 
         for (int j = 0; j < segnl.getLength(); j++) {
-          boolean have_seg = false;
-          if (have_seg) {
-            continue;
-          }
           Node n = segnl.item(j);
           if (n.getNodeName().equals("seg")) {
             Pointer pointer = fromSeg(n);
             segments.put(pointer.id, pointer);
           } else if (n.getNodeName().equals("choice")) {
+            boolean have_seg = false;
+            if (have_seg) {
+              continue;
+            }
+
             NodeList choices = n.getChildNodes();
+
             for (int k = 0; k < choices.getLength(); k++) {
               if (choices.item(k).getNodeName().equals("nkjp:paren")) {
                 if (!checkRejectedParen(choices.item(k))) {
                   NodeList paren_segs = (NodeList) SEG_NODES_ONLY.evaluate(choices.item(k),
                       XPathConstants.NODESET);
                   have_seg = true;
+
                   for (int l = 0; l < paren_segs.getLength(); l++) {
                     Pointer pointer = fromSeg(paren_segs.item(l));
                     segments.put(pointer.id, pointer);
