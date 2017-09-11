@@ -45,6 +45,7 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
     StringBuilder sentencesString = new StringBuilder();
     List<Span> sentenceSpans = new LinkedList<>();
     Map<String, String> paragraphs = text.getParagraphs();
+    System.err.println("paras " + paragraphs.size());
 
     while (segmentIt.hasNext()) {
       Map.Entry<String, Map<String, NKJPSegmentationDocument.Pointer>> segment = segmentIt.next();
@@ -55,10 +56,10 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
       String currentParagraph = "";
       System.err.println("Sentence start " + segment.getKey());
 
+      System.err.println("Segment.getValue " + segment.getValue().size());
       for (String s : segment.getValue().keySet()) {
         NKJPSegmentationDocument.Pointer currentPointer = segment.getValue().get(s);
         System.err.println("id " + currentPointer.id + " para " + paragraphs.get(currentPointer.id));
-        currentParagraph = paragraphs.get(currentPointer.id);
         Span currentSpan = currentPointer.toSpan();
         System.err.println("for " + currentSpan);
 
@@ -67,6 +68,7 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
           start = currentSpan.getStart();
           started = true;
           lastParagraphId = currentPointer.id;
+          currentParagraph = paragraphs.get(currentPointer.id);
         }
 
         if (!lastParagraphId.equals(currentPointer.id)) {
@@ -80,6 +82,7 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
           start = currentSpan.getStart();
           end = currentSpan.getEnd();
           lastParagraphId = currentPointer.id;
+          currentParagraph = paragraphs.get(currentPointer.id);
         } else {
           end = currentSpan.getEnd();
         }
@@ -91,6 +94,7 @@ public class NKJPSentenceSampleStream implements ObjectStream<SentenceSample> {
       sentencesString.append(currentParagraph.substring(start, end));
       int new_end = sentencesString.length();
       sentenceSpans.add(new Span(new_start, new_end));
+      sentencesString.append(' ');
       System.err.println("so far: " + sentencesString.toString());
     }
 
