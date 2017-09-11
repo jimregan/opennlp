@@ -112,8 +112,9 @@ public class NKJPSegmentationDocument {
         for (int j = 0; j < segnl.getLength(); j++) {
           Node n = segnl.item(j);
           if (n.getNodeName().equals("seg")) {
+            String segid = xmlID(n);
             Pointer pointer = fromSeg(n);
-            segments.put(pointer.id, pointer);
+            segments.put(segid, pointer);
           } else if (n.getNodeName().equals("choice")) {
             boolean have_seg = false;
             if (have_seg) {
@@ -130,15 +131,17 @@ public class NKJPSegmentationDocument {
                   have_seg = true;
 
                   for (int l = 0; l < paren_segs.getLength(); l++) {
+                    String segid = xmlID(paren_segs.item(l));
                     Pointer pointer = fromSeg(paren_segs.item(l));
-                    segments.put(pointer.id, pointer);
+                    segments.put(segid, pointer);
                   }
                 }
               } else if (choices.item(k).getNodeName().equals("seg")) {
                 if (!checkRejected(choices.item(k))) {
                   have_seg = true;
+                  String segid = xmlID(choices.item(k));
                   Pointer pointer = fromSeg(choices.item(k));
-                  segments.put(pointer.id, pointer);
+                  segments.put(segid, pointer);
                 }
               }
             }
@@ -182,8 +185,8 @@ public class NKJPSegmentationDocument {
     }
   }
 
-  static Pointer fromSeg(Node n) throws IOException {
-    if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
+  static String xmlID(Node n) throws IOException {
+    if (n.getAttributes() == null || n.getAttributes().getLength() < 1) {
       throw new IOException("Missing required attributes");
     }
 
@@ -191,6 +194,19 @@ public class NKJPSegmentationDocument {
     if (n.getAttributes().getNamedItem("xml:id") != null) {
       id = n.getAttributes().getNamedItem("xml:id").getTextContent();
     }
+
+    if (id == null) {
+      throw new IOException("Missing xml:id attribute");
+    }
+
+    return id;
+  }
+
+  static Pointer fromSeg(Node n) throws IOException {
+    if (n.getAttributes() == null || n.getAttributes().getLength() < 2) {
+      throw new IOException("Missing required attributes");
+    }
+
     String ptr = null;
     if (n.getAttributes().getNamedItem("corresp") != null) {
       ptr = n.getAttributes().getNamedItem("corresp").getTextContent();
@@ -200,7 +216,7 @@ public class NKJPSegmentationDocument {
       spacing = n.getAttributes().getNamedItem("nkjp:nps").getTextContent();
     }
 
-    if (id == null || ptr == null) {
+    if (ptr == null) {
       throw new IOException("Missing required attribute");
     }
 
@@ -233,7 +249,7 @@ public class NKJPSegmentationDocument {
       length = Integer.parseInt(pieces[3]);
     }
 
-    return new Pointer(document, id, offset, length, space_after);
+    return new Pointer(document, docid, offset, length, space_after);
   }
 
   static NKJPSegmentationDocument parse(File file) throws IOException {
