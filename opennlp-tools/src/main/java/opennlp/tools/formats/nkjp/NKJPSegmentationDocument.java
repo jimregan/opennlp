@@ -233,7 +233,7 @@ public class NKJPSegmentationDocument {
       length = Integer.parseInt(pieces[3]);
     }
 
-    return new Pointer(document, docid, offset, length, space_after);
+    return new Pointer(document, id, offset, length, space_after);
   }
 
   static NKJPSegmentationDocument parse(File file) throws IOException {
