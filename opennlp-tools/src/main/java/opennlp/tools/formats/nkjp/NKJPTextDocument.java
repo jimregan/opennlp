@@ -67,7 +67,8 @@ public class NKJPTextDocument {
       XPathFactory xPathfactory = XPathFactory.newInstance();
       XPath xpath = xPathfactory.newXPath();
 
-      final XPathExpression TEXT_NODES = xpath.compile("/teiCorpus/TEI/text/group/text|/teiCorpus/TEI/text");
+      final XPathExpression TEXT_NODES_EXAMPLE = xpath.compile("/teiCorpus/TEI/text/group/text");
+      final XPathExpression TEXT_NODES_SAMPLE = xpath.compile("/teiCorpus/TEI/text");
       final XPathExpression DIV_NODES = xpath.compile("./body/div");
       final XPathExpression PARA_NODES = xpath.compile("./p|./ab");
 
@@ -79,7 +80,10 @@ public class NKJPTextDocument {
       }
 
       String current_text = "";
-      NodeList textnl = (NodeList) TEXT_NODES.evaluate(doc, XPathConstants.NODESET);
+      NodeList textnl = (NodeList) TEXT_NODES_EXAMPLE.evaluate(doc, XPathConstants.NODESET);
+      if (textnl.getLength() == 0) {
+        textnl = (NodeList) TEXT_NODES_SAMPLE.evaluate(doc, XPathConstants.NODESET);
+      }
 
       for (int i = 0; i < textnl.getLength(); i++) {
         Node textnode = textnl.item(i);
