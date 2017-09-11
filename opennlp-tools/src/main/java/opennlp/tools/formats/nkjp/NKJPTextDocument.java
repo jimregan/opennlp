@@ -93,7 +93,7 @@ public class NKJPTextDocument {
         NodeList divnl = (NodeList) DIV_NODES.evaluate(textnode, XPathConstants.NODESET);
         for (int j = 0; j < divnl.getLength(); j++) {
           Node divnode = divnl.item(j);
-          String divtype = attrib(divnode, "type", true);
+          String divtype = attrib(divnode, "type", false);
           String divid = attrib(divnode, "xml:id", true);
           divtypes.put(divid, divtype);
 
