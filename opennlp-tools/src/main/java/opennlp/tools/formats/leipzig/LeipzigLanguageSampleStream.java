@@ -18,6 +18,7 @@
 package opennlp.tools.formats.leipzig;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,6 +36,7 @@ import java.util.stream.IntStream;
 
 import opennlp.tools.langdetect.Language;
 import opennlp.tools.langdetect.LanguageSample;
+import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.util.MarkableFileInputStreamFactory;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
@@ -55,14 +57,19 @@ public class LeipzigLanguageSampleStream implements ObjectStream<LanguageSample>
       // The file name contains the number of lines, but to make this more stable
       // the file is once scanned for the count even tough this is slower
       int totalLineCount = (int) Files.lines(sentencesFile.toPath()).count();
+      int requiredLines = sentencesPerSample * numberOfSamples;
+
+      if (totalLineCount < requiredLines)
+        throw new InvalidFormatException(
+                String.format("%s does not contain enough lines (%d lines < %d required lines).",
+                        sentencesFile.getPath(), totalLineCount, requiredLines));
 
       List<Integer> indexes = IntStream.range(0, totalLineCount)
           .boxed().collect(Collectors.toList());
 
       Collections.shuffle(indexes, random);
 
-      Set<Integer> selectedLines = new HashSet<>(
-          indexes.subList(0, sentencesPerSample * numberOfSamples));
+      Set<Integer> selectedLines = new HashSet<>(indexes.subList(0, requiredLines));
 
       List<String> sentences = new ArrayList<>();
 
@@ -125,9 +132,15 @@ public class LeipzigLanguageSampleStream implements ObjectStream<LanguageSample>
   public LeipzigLanguageSampleStream(File leipzigFolder, final int sentencesPerSample,
                                      final int samplesPerLanguage) throws IOException {
     this.sentencesPerSample = sentencesPerSample;
-    // TODO: Use a FileFilter to make this more reliable in case there are
-    //       files which should be ignored or are shorter than 3 chars for the lang detect substring
-    sentencesFiles = leipzigFolder.listFiles();
+
+    sentencesFiles = leipzigFolder.listFiles(new FileFilter() {
+      @Override
+      public boolean accept(File pathname) {
+        return !pathname.isHidden() && pathname.isFile()
+                && pathname.getName().length() >= 3
+                && pathname.getName().substring(0,3).matches("[a-z]+");
+      }
+    });
     Arrays.sort(sentencesFiles);
 
     Map<String, Integer> langCounts = Arrays.stream(sentencesFiles)
